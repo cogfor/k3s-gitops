@@ -22,49 +22,22 @@ spec:
       error_reporting:
         enabled: false
       postgresql:
-        host: "authentik-postgresql"
+        host: "postgres"
         port: 5432
         name: "authentik"
         user: "authentik"
         password: ""  # Provided by secret
       redis:
-        host: "authentik-redis-master"
+        host: "redis"
         password: ""  # Provided by secret
 
-    # PostgreSQL subchart - using latest Bitnami image
+    # PostgreSQL subchart - DISABLED (using external StatefulSet)
     postgresql:
-      enabled: true
-      image:
-        registry: docker.io
-        repository: bitnami/postgresql
-        tag: latest
-      auth:
-        username: authentik
-        database: authentik
-        existingSecret: authentik-secrets
-        secretKeys:
-          adminPasswordKey: postgres-password
-          userPasswordKey: postgres-password
-      primary:
-        persistence:
-          enabled: true
-          existingClaim: authentik-postgres
+      enabled: false
 
-    # Redis subchart - using latest Bitnami image
+    # Redis subchart - DISABLED (using external StatefulSet)
     redis:
-      enabled: true
-      image:
-        registry: docker.io
-        repository: bitnami/redis
-        tag: latest
-      auth:
-        enabled: true
-        existingSecret: authentik-secrets
-        existingSecretPasswordKey: redis-password
-      master:
-        persistence:
-          enabled: true
-          existingClaim: authentik-redis
+      enabled: false
 
     # Server replicas
     server:
@@ -79,7 +52,7 @@ spec:
               name: authentik-secrets
               key: authentik-secret-key
         - name: AUTHENTIK_POSTGRESQL__HOST
-          value: "authentik-postgresql"
+          value: "postgres"
         - name: AUTHENTIK_POSTGRESQL__USER
           value: "authentik"
         - name: AUTHENTIK_POSTGRESQL__NAME
@@ -90,7 +63,7 @@ spec:
               name: authentik-secrets
               key: postgres-password
         - name: AUTHENTIK_REDIS__HOST
-          value: "authentik-redis-master"
+          value: "redis"
         - name: AUTHENTIK_REDIS__PASSWORD
           valueFrom:
             secretKeyRef:
@@ -127,7 +100,7 @@ spec:
               name: authentik-secrets
               key: authentik-secret-key
         - name: AUTHENTIK_POSTGRESQL__HOST
-          value: "authentik-postgresql"
+          value: "postgres"
         - name: AUTHENTIK_POSTGRESQL__USER
           value: "authentik"
         - name: AUTHENTIK_POSTGRESQL__NAME
@@ -138,7 +111,7 @@ spec:
               name: authentik-secrets
               key: postgres-password
         - name: AUTHENTIK_REDIS__HOST
-          value: "authentik-redis-master"
+          value: "redis"
         - name: AUTHENTIK_REDIS__PASSWORD
           valueFrom:
             secretKeyRef:
