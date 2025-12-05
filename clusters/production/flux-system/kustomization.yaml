@@ -5,7 +5,7 @@ resources:
   - gotk-sync.yaml
   - sources-kustomization.yaml
   - cert-manager-kustomization.yaml
-  - cert-manager-config-kustomization.yaml
+  - cert-manager-issuers.yaml
   - authentik-kustomization.yaml
   - linkwarden-kustomization.yaml
 patches:
