@@ -36,8 +36,8 @@ spec:
       enabled: true
       image:
         registry: docker.io
-        repository: bitnami/postgresql
-        tag: 15-debian-12
+        repository: postgres
+        tag: "16-alpine"
       auth:
         username: authentik
         database: authentik
@@ -55,8 +55,8 @@ spec:
       enabled: true
       image:
         registry: docker.io
-        repository: bitnami/redis
-        tag: 7.4-debian-12
+        repository: redis
+        tag: "7-alpine"
       auth:
         enabled: true
         existingSecret: authentik-secrets
