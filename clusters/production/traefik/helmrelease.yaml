@@ -18,16 +18,16 @@ spec:
   values:
     deployment:
       replicas: 1
+      # Use host network - bind directly to node's ports 80/443
+      kind: DaemonSet
+      dnsPolicy: ClusterFirstWithHostNet
 
-    # Use external LoadBalancer (MetalLB or cloud LB)
+    # Run on host network (no LoadBalancer needed for single-node cluster)
+    hostNetwork: true
+
+    # Service type ClusterIP since we're using hostNetwork
     service:
-      type: LoadBalancer
-      annotations:
-        # Hetzner Cloud specific annotations
-        load-balancer.hetzner.cloud/name: traefik-lb
-        load-balancer.hetzner.cloud/location: fsn1
-        load-balancer.hetzner.cloud/type: lb11
-        load-balancer.hetzner.cloud/uses-proxyprotocol: "false"
+      type: ClusterIP
 
     # Enable access logs for debugging
     logs:
