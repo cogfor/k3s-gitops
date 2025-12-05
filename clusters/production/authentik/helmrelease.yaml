@@ -31,10 +31,6 @@ spec:
         host: "authentik-redis-master"
         password: ""  # Provided by secret
 
-    # Ingress configuration - using Traefik IngressRoute instead
-    ingress:
-      enabled: false
-
     # PostgreSQL subchart
     postgresql:
       enabled: true
