@@ -13,5 +13,9 @@ spec:
     name: flux-system
   timeout: 5m
   wait: true
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
   dependsOn:
     - name: sources
