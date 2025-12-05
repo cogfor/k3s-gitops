@@ -3,7 +3,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - storage.yaml
-  - secrets.enc.yaml
+  # - secrets.enc.yaml  # Temporarily disabled - managing manually due to SOPS issues
   - helmrelease.yaml
   - certificate.yaml
   - ingressroute.yaml
