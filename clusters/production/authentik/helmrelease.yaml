@@ -31,13 +31,13 @@ spec:
         host: "authentik-redis-master"
         password: ""  # Provided by secret
 
-    # PostgreSQL subchart - using specific Bitnami image digest
+    # PostgreSQL subchart - using latest Bitnami image
     postgresql:
       enabled: true
       image:
         registry: docker.io
         repository: bitnami/postgresql
-        digest: sha256:74db3d575a9c104f7d73e214edccbb9c0754be908c8cecd31562ac7b945ae248
+        tag: latest
       auth:
         username: authentik
         database: authentik
@@ -50,13 +50,13 @@ spec:
           enabled: true
           existingClaim: authentik-postgres
 
-    # Redis subchart - using specific Bitnami image digest
+    # Redis subchart - using latest Bitnami image
     redis:
       enabled: true
       image:
         registry: docker.io
         repository: bitnami/redis
-        digest: sha256:8f0d1553fb906db0d3a00d249bd89647a800f4933dfb5903cc57466ad3cef771
+        tag: latest
       auth:
         enabled: true
         existingSecret: authentik-secrets
