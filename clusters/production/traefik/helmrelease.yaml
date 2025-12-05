@@ -18,8 +18,8 @@ spec:
   values:
     deployment:
       replicas: 1
-      # Use host network - bind directly to node's ports 80/443
-      kind: DaemonSet
+      # Run on host network - bind directly to node's ports 80/443
+      # Use Deployment (not DaemonSet) to support cert-manager integration
       dnsPolicy: ClusterFirstWithHostNet
 
     # Run on host network (no LoadBalancer needed for single-node cluster)
@@ -58,27 +58,12 @@ spec:
       prometheus:
         enabled: true
 
-    # Additional arguments
-    additionalArguments:
-      - "--certificatesresolvers.letsencrypt.acme.dnschallenge=true"
-      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudflare"
-      - "--certificatesresolvers.letsencrypt.acme.email=rene@primed.io"
-      - "--certificatesresolvers.letsencrypt.acme.storage=/data/acme.json"
+    # Additional arguments (no ACME - using cert-manager instead)
+    additionalArguments: []
 
-    # Environment variables for Cloudflare DNS challenge
-    env:
-      - name: CF_DNS_API_TOKEN
-        valueFrom:
-          secretKeyRef:
-            name: cloudflare-api-token
-            key: api-token
-
-    # Persistent storage for ACME certificates
+    # No persistence needed - cert-manager handles certificates
     persistence:
-      enabled: true
-      name: traefik-certs
-      size: 128Mi
-      path: /data
+      enabled: false
 
     # Resource limits
     resources:
