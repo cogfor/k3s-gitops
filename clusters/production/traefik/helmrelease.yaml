@@ -34,17 +34,16 @@ spec:
       fsGroup: 65532
       fsGroupChangePolicy: "OnRootMismatch"
 
-    # Container security context - temporarily allow root for debugging
-    # TODO: Fix permissions to run as non-root with NET_BIND_SERVICE
+    # Container security context - run as non-root with NET_BIND_SERVICE
     securityContext:
       capabilities:
         add:
           - NET_BIND_SERVICE
         drop:
           - ALL
-      readOnlyRootFilesystem: false
-      runAsNonRoot: false
-      runAsUser: 0
+      readOnlyRootFilesystem: true
+      runAsNonRoot: true
+      runAsUser: 65532
 
     # Enable access logs for debugging
     logs:
