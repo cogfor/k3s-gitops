@@ -1,0 +1,159 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: authentik
+  namespace: authentik
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: authentik
+      version: "2024.x"
+      sourceRef:
+        kind: HelmRepository
+        name: authentik
+        namespace: flux-system
+      interval: 12h
+  values:
+    # Authentik server configuration
+    authentik:
+      secret_key: ""  # Provided by secret
+      error_reporting:
+        enabled: false
+      postgresql:
+        host: "authentik-postgresql"
+        port: 5432
+        name: "authentik"
+        user: "authentik"
+        password: ""  # Provided by secret
+      redis:
+        host: "authentik-redis-master"
+        password: ""  # Provided by secret
+
+    # Ingress configuration - using Traefik IngressRoute instead
+    ingress:
+      enabled: false
+
+    # PostgreSQL subchart
+    postgresql:
+      enabled: true
+      auth:
+        username: authentik
+        database: authentik
+        existingSecret: authentik-secrets
+        secretKeys:
+          adminPasswordKey: postgres-password
+          userPasswordKey: postgres-password
+      primary:
+        persistence:
+          enabled: true
+          existingClaim: authentik-postgres
+
+    # Redis subchart
+    redis:
+      enabled: true
+      auth:
+        enabled: true
+        existingSecret: authentik-secrets
+        existingSecretPasswordKey: redis-password
+      master:
+        persistence:
+          enabled: true
+          existingClaim: authentik-redis
+
+    # Server replicas
+    server:
+      replicas: 1
+      envFrom:
+        - secretRef:
+            name: authentik-secrets
+      env:
+        - name: AUTHENTIK_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: authentik-secrets
+              key: authentik-secret-key
+        - name: AUTHENTIK_POSTGRESQL__HOST
+          value: "authentik-postgresql"
+        - name: AUTHENTIK_POSTGRESQL__USER
+          value: "authentik"
+        - name: AUTHENTIK_POSTGRESQL__NAME
+          value: "authentik"
+        - name: AUTHENTIK_POSTGRESQL__PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: authentik-secrets
+              key: postgres-password
+        - name: AUTHENTIK_REDIS__HOST
+          value: "authentik-redis-master"
+        - name: AUTHENTIK_REDIS__PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: authentik-secrets
+              key: redis-password
+
+      # Volume for media files
+      volumes:
+        - name: media
+          persistentVolumeClaim:
+            claimName: authentik-media
+      volumeMounts:
+        - name: media
+          mountPath: /media
+
+      resources:
+        requests:
+          cpu: 200m
+          memory: 512Mi
+        limits:
+          cpu: 1000m
+          memory: 1Gi
+
+    # Worker configuration
+    worker:
+      replicas: 1
+      envFrom:
+        - secretRef:
+            name: authentik-secrets
+      env:
+        - name: AUTHENTIK_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: authentik-secrets
+              key: authentik-secret-key
+        - name: AUTHENTIK_POSTGRESQL__HOST
+          value: "authentik-postgresql"
+        - name: AUTHENTIK_POSTGRESQL__USER
+          value: "authentik"
+        - name: AUTHENTIK_POSTGRESQL__NAME
+          value: "authentik"
+        - name: AUTHENTIK_POSTGRESQL__PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: authentik-secrets
+              key: postgres-password
+        - name: AUTHENTIK_REDIS__HOST
+          value: "authentik-redis-master"
+        - name: AUTHENTIK_REDIS__PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: authentik-secrets
+              key: redis-password
+
+      # Volume for media files
+      volumes:
+        - name: media
+          persistentVolumeClaim:
+            claimName: authentik-media
+      volumeMounts:
+        - name: media
+          mountPath: /media
+
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi

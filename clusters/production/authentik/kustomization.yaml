@@ -3,3 +3,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - storage.yaml
+  - secrets.enc.yaml
+  - helmrelease.yaml
+  - certificate.yaml
+  - ingressroute.yaml
