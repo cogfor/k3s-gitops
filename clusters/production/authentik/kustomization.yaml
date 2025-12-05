@@ -5,6 +5,7 @@ resources:
   - secrets.enc.yaml
   - postgres.yaml
   - redis.yaml
+  - media-pvc.yaml
   - helmrelease.yaml
   - certificate.yaml
   - ingressroute.yaml
