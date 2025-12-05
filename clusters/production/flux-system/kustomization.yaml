@@ -6,6 +6,7 @@ resources:
   - sources-kustomization.yaml
   - cert-manager-kustomization.yaml
   - cert-manager-issuers.yaml
+  - traefik-kustomization.yaml
   - authentik-kustomization.yaml
   - linkwarden-kustomization.yaml
 patches:
