@@ -34,6 +34,10 @@ spec:
     # PostgreSQL subchart
     postgresql:
       enabled: true
+      image:
+        registry: docker.io
+        repository: bitnami/postgresql
+        tag: 15.8.0-debian-12-r8
       auth:
         username: authentik
         database: authentik
@@ -49,6 +53,10 @@ spec:
     # Redis subchart
     redis:
       enabled: true
+      image:
+        registry: docker.io
+        repository: bitnami/redis
+        tag: 7.2.4-debian-12-r9
       auth:
         enabled: true
         existingSecret: authentik-secrets

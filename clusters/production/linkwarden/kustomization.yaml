@@ -3,3 +3,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - storage.yaml
+  - postgres.yaml
+  - deployment.yaml
+  - ingressroute.yaml
+  - certificate.yaml
