@@ -29,8 +29,14 @@ spec:
     service:
       type: ClusterIP
 
-    # Security context to allow binding to privileged ports (80, 443)
+    # Pod security - allow binding to privileged ports with NET_BIND_SERVICE
+    podSecurityContext:
+      fsGroup: 65532
+      fsGroupChangePolicy: "OnRootMismatch"
+
+    # Container security context with NET_BIND_SERVICE capability
     securityContext:
+      allowPrivilegeEscalation: false
       capabilities:
         add:
           - NET_BIND_SERVICE
@@ -39,6 +45,7 @@ spec:
       readOnlyRootFilesystem: true
       runAsNonRoot: true
       runAsUser: 65532
+      runAsGroup: 65532
 
     # Enable access logs for debugging
     logs:
