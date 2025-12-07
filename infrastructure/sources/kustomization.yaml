@@ -4,3 +4,4 @@ resources:
   - jetstack.yaml
   - traefik.yaml
   - authentik.yaml
+  - kyverno.yaml

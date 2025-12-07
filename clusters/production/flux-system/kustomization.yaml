@@ -9,6 +9,7 @@ resources:
   - traefik-kustomization.yaml
   - authentik-kustomization.yaml
   - linkwarden-kustomization.yaml
+  - kyverno-kustomization.yaml
 patches:
   - patch: |-
       apiVersion: apps/v1
