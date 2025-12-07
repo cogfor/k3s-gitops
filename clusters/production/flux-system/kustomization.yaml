@@ -10,6 +10,7 @@ resources:
   - authentik-kustomization.yaml
   - linkwarden-kustomization.yaml
   - kyverno-kustomization.yaml
+  - kyverno-policies-kustomization.yaml
 patches:
   - patch: |-
       apiVersion: apps/v1
