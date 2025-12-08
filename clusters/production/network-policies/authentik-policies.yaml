@@ -219,3 +219,77 @@ spec:
       ports:
         - protocol: TCP
           port: 6379
+---
+# LDAP Outpost Policies
+# Allow LDAP outpost → Authentik server (egress)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ldap-outpost-to-authentik
+  namespace: authentik
+spec:
+  podSelector:
+    matchLabels:
+      app: authentik-ldap-outpost
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: authentik
+      ports:
+        - protocol: TCP
+          port: 9000  # Authentik HTTP API
+---
+# Allow LDAP outpost → DNS (kube-system)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ldap-outpost-to-dns
+  namespace: authentik
+spec:
+  podSelector:
+    matchLabels:
+      app: authentik-ldap-outpost
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+# Allow Authentik server → LDAP outpost (ingress)
+# For health checks and management
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-authentik-to-ldap-outpost
+  namespace: authentik
+spec:
+  podSelector:
+    matchLabels:
+      app: authentik-ldap-outpost
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: authentik
+      ports:
+        - protocol: TCP
+          port: 3389  # LDAP
+        - protocol: TCP
+          port: 6636  # LDAPS
+        - protocol: TCP
+          port: 9300  # Metrics
