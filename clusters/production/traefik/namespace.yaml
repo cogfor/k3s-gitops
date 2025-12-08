@@ -4,3 +4,6 @@ metadata:
   name: traefik
   labels:
     name: traefik
+  annotations:
+    linkerd.io/inject: enabled
+    config.linkerd.io/skip-inbound-ports: "80,443"

@@ -5,3 +5,5 @@ metadata:
   name: kyverno
   labels:
     pod-security.kubernetes.io/enforce: privileged
+  annotations:
+    linkerd.io/inject: enabled
