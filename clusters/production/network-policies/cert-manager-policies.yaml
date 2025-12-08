@@ -1,0 +1,115 @@
+---
+# Allow cert-manager → DNS
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-cert-manager-to-dns
+  namespace: cert-manager
+spec:
+  podSelector: {}  # All cert-manager pods
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+# Allow cert-manager → Linkerd control plane (for sidecar mTLS)
+# Required for Linkerd proxy to fetch certificates and policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-cert-manager-to-linkerd
+  namespace: cert-manager
+spec:
+  podSelector: {}  # All pods in cert-manager namespace (including sidecars)
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: linkerd
+      ports:
+        - protocol: TCP
+          port: 8080  # linkerd-identity
+        - protocol: TCP
+          port: 8086  # linkerd-destination
+        - protocol: TCP
+          port: 8090  # linkerd-policy
+---
+# Allow cert-manager → Kubernetes API (for Linkerd TokenReview and cert management)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-cert-manager-to-k8s-api
+  namespace: cert-manager
+spec:
+  podSelector: {}  # All pods in cert-manager namespace (including sidecars)
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 10.43.0.1/32  # Kubernetes API service ClusterIP
+      ports:
+        - protocol: TCP
+          port: 443
+---
+# Allow cert-manager → HTTPS egress (for ACME, Let's Encrypt)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-cert-manager-https-egress
+  namespace: cert-manager
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: cert-manager
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 169.254.169.254/32  # Block cloud metadata
+              - 10.42.0.0/16        # Block pod network (force explicit allow)
+              - 10.43.0.0/16        # Block service network (force explicit allow)
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 80
+---
+# Allow cert-manager webhook → receive webhook calls
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-webhook-ingress
+  namespace: cert-manager
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: webhook
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+        - ipBlock:
+            cidr: 10.43.0.0/16  # Service network (API server calls webhook)
+      ports:
+        - protocol: TCP
+          port: 10250  # Webhook port

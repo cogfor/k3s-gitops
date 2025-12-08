@@ -1,0 +1,105 @@
+---
+# Allow kyverno → DNS
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-kyverno-to-dns
+  namespace: kyverno
+spec:
+  podSelector: {}  # All kyverno pods
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+# Allow kyverno → Linkerd control plane (for sidecar mTLS)
+# Required for Linkerd proxy to fetch certificates and policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-kyverno-to-linkerd
+  namespace: kyverno
+spec:
+  podSelector: {}  # All pods in kyverno namespace (including sidecars)
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: linkerd
+      ports:
+        - protocol: TCP
+          port: 8080  # linkerd-identity
+        - protocol: TCP
+          port: 8086  # linkerd-destination
+        - protocol: TCP
+          port: 8090  # linkerd-policy
+---
+# Allow kyverno → Kubernetes API (for Linkerd TokenReview and policy management)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-kyverno-to-k8s-api
+  namespace: kyverno
+spec:
+  podSelector: {}  # All pods in kyverno namespace (including sidecars)
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 10.43.0.1/32  # Kubernetes API service ClusterIP
+      ports:
+        - protocol: TCP
+          port: 443
+---
+# Allow kyverno admission controller → receive webhook calls
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-admission-webhook-ingress
+  namespace: kyverno
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: admission-controller
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+        - ipBlock:
+            cidr: 10.43.0.0/16  # Service network (API server calls webhook)
+      ports:
+        - protocol: TCP
+          port: 9443  # Admission webhook port
+---
+# Allow kyverno → all namespaces (for policy enforcement validation)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-kyverno-to-pods
+  namespace: kyverno
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: kyverno
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector: {}  # Allow to any namespace for validation

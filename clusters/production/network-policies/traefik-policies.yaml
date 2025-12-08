@@ -63,29 +63,44 @@ spec:
         - protocol: TCP
           port: 53
 ---
-# Allow Traefik → Kubernetes API (for ingress discovery)
+# Allow Traefik → Linkerd control plane (for sidecar mTLS)
+# Required for Linkerd proxy to fetch certificates and policy
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: allow-traefik-to-k8s-api
+  name: allow-traefik-to-linkerd
   namespace: traefik
 spec:
-  podSelector:
-    matchLabels:
-      app.kubernetes.io/name: traefik
+  podSelector: {}  # All pods in traefik namespace (including sidecars)
   policyTypes:
     - Egress
   egress:
     - to:
         - namespaceSelector:
             matchLabels:
-              kubernetes.io/metadata.name: default
+              kubernetes.io/metadata.name: linkerd
       ports:
         - protocol: TCP
-          port: 443  # Kubernetes API server
+          port: 8080  # linkerd-identity
+        - protocol: TCP
+          port: 8086  # linkerd-destination
+        - protocol: TCP
+          port: 8090  # linkerd-policy
+---
+# Allow Traefik → Kubernetes API (for Linkerd TokenReview and ingress discovery)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-traefik-to-k8s-api
+  namespace: traefik
+spec:
+  podSelector: {}  # All pods in traefik namespace (including sidecars)
+  policyTypes:
+    - Egress
+  egress:
     - to:
         - ipBlock:
-            cidr: 10.43.0.1/32  # kubernetes.default.svc ClusterIP
+            cidr: 10.43.0.1/32  # Kubernetes API service ClusterIP
       ports:
         - protocol: TCP
           port: 443
