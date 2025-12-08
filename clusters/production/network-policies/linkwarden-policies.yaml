@@ -1,0 +1,141 @@
+---
+# Allow Traefik → Linkwarden (ingress)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-traefik-to-linkwarden
+  namespace: linkwarden
+spec:
+  podSelector:
+    matchLabels:
+      app: linkwarden
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: traefik
+      ports:
+        - protocol: TCP
+          port: 3000  # Linkwarden HTTP port
+---
+# Allow Linkwarden → PostgreSQL (egress)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-linkwarden-to-postgres
+  namespace: linkwarden
+spec:
+  podSelector:
+    matchLabels:
+      app: linkwarden
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+      ports:
+        - protocol: TCP
+          port: 5432
+---
+# Allow Linkwarden → DNS (kube-system)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-linkwarden-to-dns
+  namespace: linkwarden
+spec:
+  podSelector:
+    matchLabels:
+      app: linkwarden
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+# Allow Linkwarden → HTTPS egress (for Authentik OAuth2, external APIs)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-linkwarden-https-egress
+  namespace: linkwarden
+spec:
+  podSelector:
+    matchLabels:
+      app: linkwarden
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 169.254.169.254/32  # Block AWS metadata
+              - 10.42.0.0/16        # Block pod network (force explicit allow)
+              - 10.43.0.0/16        # Block service network (force explicit allow)
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 80
+---
+# Allow Linkwarden → Authentik (for OAuth2)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-linkwarden-to-authentik
+  namespace: linkwarden
+spec:
+  podSelector:
+    matchLabels:
+      app: linkwarden
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: authentik
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: authentik
+      ports:
+        - protocol: TCP
+          port: 9000  # Authentik HTTP port
+        - protocol: TCP
+          port: 9443  # Authentik HTTPS port
+---
+# Allow PostgreSQL → receive connections from Linkwarden (ingress)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-postgres-ingress
+  namespace: linkwarden
+spec:
+  podSelector:
+    matchLabels:
+      app: postgres
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: linkwarden
+      ports:
+        - protocol: TCP
+          port: 5432
