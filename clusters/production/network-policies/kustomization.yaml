@@ -7,3 +7,4 @@ resources:
   - linkwarden-policies.yaml
   - traefik-policies.yaml
   - system-policies.yaml
+  - linkerd-policies.yaml

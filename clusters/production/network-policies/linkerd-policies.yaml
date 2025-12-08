@@ -1,0 +1,134 @@
+---
+# Allow ALL namespaces → Linkerd Identity service (8080)
+# Required for all meshed pods to get mTLS certificates
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-all-to-linkerd-identity
+  namespace: linkerd
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: linkerd-identity
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector: {}  # Allow from ALL namespaces
+      ports:
+        - protocol: TCP
+          port: 8080
+---
+# Allow ALL namespaces → Linkerd Destination service (8086)
+# Required for service discovery and routing
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-all-to-linkerd-destination
+  namespace: linkerd
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: linkerd-destination
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector: {}  # Allow from ALL namespaces
+      ports:
+        - protocol: TCP
+          port: 8086
+        - protocol: TCP
+          port: 8090  # Linkerd policy server (part of destination)
+---
+# Allow ALL namespaces → Linkerd Proxy Injector webhook (443)
+# Required for automatic sidecar injection
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-k8s-api-to-proxy-injector
+  namespace: linkerd
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: linkerd-proxy-injector
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+        - ipBlock:
+            cidr: 10.43.0.0/16  # Service network
+      ports:
+        - protocol: TCP
+          port: 8443
+---
+# Allow Linkerd control plane → DNS (CoreDNS)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-linkerd-to-dns
+  namespace: linkerd
+spec:
+  podSelector: {}  # All pods in linkerd namespace
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+# Allow Linkerd control plane → k8s API (443)
+# Required for service discovery, watching for resources
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-linkerd-to-k8s-api
+  namespace: linkerd
+spec:
+  podSelector: {}  # All pods in linkerd namespace
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: TCP
+          port: 443
+    - to:
+        - ipBlock:
+            cidr: 10.43.0.1/32  # k8s API service ClusterIP
+      ports:
+        - protocol: TCP
+          port: 443
+---
+# Allow Linkerd control plane → itself (intra-namespace communication)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-linkerd-internal
+  namespace: linkerd
+spec:
+  podSelector: {}  # All pods in linkerd namespace
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector: {}  # From any pod in linkerd namespace
+  egress:
+    - to:
+        - podSelector: {}  # To any pod in linkerd namespace
