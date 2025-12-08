@@ -9,3 +9,4 @@ resources:
   - helmrelease.yaml
   - certificate.yaml
   - ingressroute.yaml
+  - ldap-outpost.yaml

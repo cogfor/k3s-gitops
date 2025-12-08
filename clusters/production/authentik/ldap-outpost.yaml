@@ -1,0 +1,123 @@
+---
+# Authentik LDAP Outpost Deployment
+# Provides LDAPS authentication for mail server
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: authentik-ldap-outpost
+  namespace: authentik
+  labels:
+    app: authentik-ldap-outpost
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: authentik-ldap-outpost
+  template:
+    metadata:
+      labels:
+        app: authentik-ldap-outpost
+      annotations:
+        linkerd.io/inject: enabled  # Enable Linkerd sidecar for mTLS
+    spec:
+      containers:
+        - name: ldap
+          image: ghcr.io/goauthentik/ldap:2024.8.3
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: ldaps
+              containerPort: 6636
+              protocol: TCP
+            - name: ldap
+              containerPort: 3389
+              protocol: TCP
+            - name: metrics
+              containerPort: 9300
+              protocol: TCP
+          env:
+            # Authentik server connection
+            - name: AUTHENTIK_HOST
+              value: "http://authentik-server:9000"
+            - name: AUTHENTIK_INSECURE
+              value: "false"
+            - name: AUTHENTIK_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-secrets
+                  key: ldap-outpost-token  # Will need to create this
+
+            # LDAP configuration
+            - name: AUTHENTIK_LISTEN__LDAP
+              value: "0.0.0.0:3389"
+            - name: AUTHENTIK_LISTEN__LDAPS
+              value: "0.0.0.0:6636"
+            - name: AUTHENTIK_LISTEN__METRICS
+              value: "0.0.0.0:9300"
+
+            # TLS configuration (self-signed for now)
+            - name: AUTHENTIK_LDAP__TLS__CERT
+              value: "/certs/tls.crt"
+            - name: AUTHENTIK_LDAP__TLS__KEY
+              value: "/certs/tls.key"
+
+            # Base DN configuration
+            - name: AUTHENTIK_LDAP__BASE_DN
+              value: "dc=primed,dc=io"
+
+          volumeMounts:
+            - name: tls-certs
+              mountPath: /certs
+              readOnly: true
+
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+
+          livenessProbe:
+            tcpSocket:
+              port: 6636
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 6636
+            initialDelaySeconds: 10
+            periodSeconds: 5
+
+      volumes:
+        - name: tls-certs
+          secret:
+            secretName: authentik-ldap-tls
+            optional: true  # Will create self-signed cert if not exists
+
+---
+# Service exposing LDAPS via NodePort
+apiVersion: v1
+kind: Service
+metadata:
+  name: authentik-ldap
+  namespace: authentik
+  labels:
+    app: authentik-ldap-outpost
+spec:
+  type: NodePort
+  selector:
+    app: authentik-ldap-outpost
+  ports:
+    - name: ldaps
+      port: 636
+      targetPort: 6636
+      nodePort: 30636
+      protocol: TCP
+    - name: ldap
+      port: 389
+      targetPort: 3389
+      protocol: TCP
+    - name: metrics
+      port: 9300
+      targetPort: 9300
+      protocol: TCP
