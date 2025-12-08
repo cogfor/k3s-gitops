@@ -1,0 +1,10 @@
+---
+# Self-signed issuer for LDAP certificates
+# cert-manager will automatically create and renew these certificates
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: ldap-selfsigned
+  namespace: authentik
+spec:
+  selfSigned: {}
