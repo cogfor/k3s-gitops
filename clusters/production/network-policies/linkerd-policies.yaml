@@ -9,7 +9,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: linkerd-identity
+      linkerd.io/control-plane-component: identity
   policyTypes:
     - Ingress
   ingress:
@@ -29,7 +29,7 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app.kubernetes.io/name: linkerd-destination
+      linkerd.io/control-plane-component: destination
   policyTypes:
     - Ingress
   ingress:
