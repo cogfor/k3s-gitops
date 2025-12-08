@@ -5,3 +5,4 @@ resources:
   - traefik.yaml
   - authentik.yaml
   - kyverno.yaml
+  - linkerd.yaml

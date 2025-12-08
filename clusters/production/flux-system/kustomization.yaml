@@ -12,6 +12,7 @@ resources:
   - kyverno-kustomization.yaml
   - kyverno-policies-kustomization.yaml
   - network-policies-kustomization.yaml
+  - linkerd-kustomization.yaml
 patches:
   - patch: |-
       apiVersion: apps/v1

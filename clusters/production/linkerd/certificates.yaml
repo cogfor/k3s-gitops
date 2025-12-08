@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: linkerd-trust-anchor
+    namespace: linkerd
+type: kubernetes.io/tls
+data:
+    ca.crt: ENC[AES256_GCM,data:aUDbXf+j4ynd6iq6xRVrmldEZ0DA9Rj46sQ3u+Nk7InF0OVOSSInOOQwF06lXM5d68aOgDaA71NWI40G/6yREYzAkEJD2ZCcfuo7XOc83rF6mGA7bjIVjjoThaXjBFCMbQI0EHv9i1b5gKjAb3s5UTX6JHHRan7a9L4MzqrH8jnuiKP3Odov59B/1rWHGFdMG0wCM/4Q1eL+v5s4sQOQGPEA4FUq5/X24oEshvNSCmIlQB6RjMMbbtpUybTOO0hdn/AEG/rc9BIZyi3tSkkTwZMSgXymAwkzLX3FK0ti5MT3/6eaBr1eM4O9qPeoGw5ta6STU0CsNYv8A5BZvt7HXfc0JRnnAJ9nHhoDGYxwxplhyuYYUX8pI+PgzXzRciPJSYDvLmcphpGN52d/k/ZoXO/NAPawQuTVwKctsJyI5bEin2JngrzBwQdmF0AVXoy3aO5qrOrPyST47LwidQihKgdS4Ib5lMS2vPTO6ct1JeovhFZUQ6c21Na8aBVAhfldz6YZXilFLp1A/vDsn12x4dl39eOZhbs/f3FXOJxdXztZ/cFnihYh6W1CECaCQl8gBnjNqha5sk/HUCi2qyvaZ+O2JKqaSCnTwvw5/89kO+iJwwP+VKzTEVJGt51S61nBIqaBY7WaLRVJvKbQDYXrZN0kuWRgBC3h48bCrLqRI+ZUsFVDSfKxdtX/3Hkc/NfdEL2seco55I7KBKo+M4bN1CPGtNNy+iJwhG5rjpqR6ZxLq0axyao4m+ih2neWn5ZzvR9QlA4jW4zACOXnnjKCwrDBZkNBMl8GEg5GJsGUhU/tNyCp/QA1Tca676LAhEJtJyCmYjD/0L2J2AaytDGoFtHwxkfHGaKxxTtQXgnY75N3kpSDC1Tz6/UNYeWgJ4AFmvLNCAYdSxgE1c9RhY91D32pLRbuvjlcJY6KdN0kFcfbgE3IditaFEAwVPMpWAFkHYv1YjjWi+rieCgPYMP3Ndb98Pb/zKZMMvtRY8Lh9LoJG9E3sJUjIDsOQaleNz604SIm1TjdaP7m8m/sa4PkNLuDWV5XnonOCNtWcyNuvhM=,iv:R9lZUPALs45hnzFbORIolawO5N84GDd3JDGqb46wiK0=,tag:RGvtxpymMVQjekRhYtmmhA==,type:str]
+    tls.crt: ENC[AES256_GCM,data:BmbB1vZvjvEE1UJCIBvQ0FxFT1pLXP5hu0OPyxB/1iZsZcXmQeSFT3mQAgndk8Oa87mi8jYDto32mmiuROGkLZPbERPPuW03ehCf/ic0uBmF3b840BFqPxNE6ufIZ1s5bdqesMQpgWVqi6za5w+8KlygGy8rvj699xv+OLIqV1BZMvH3IYZrBsAkHPoLtVlue193DPml3YpmBtde2ks+0t9NXzfh9K+ZGRSd0dpud587WBnSUM1HKy6pqYAqW4puwxNH//rkAs3XBnR5QmLJFOABdY0c1EJ6CZXI75UN3S/SAPLUroaqpE1an3Mssu1Fs93yKmCS3yi15mxxhdc5MEDcJ1GgjaBizirpgj0D/Li8f9P6JGHqJhzTS6/2OjreSR5mEiTNPQdS/DoqKVK+ojSE2OZ3QndB0K7vF32yakn9Xz3NYBnduHg9qTN7Nvx3wpK+gotuRKE/8T/3IJlab77qybfHAsB9nQtnG+dxfn5ODobVJh4YUQlaKtAQPpvHRdoOv7eH5rFtsXSdFu0IwFJ9VMRjfbFbVuqebcucdV/CqbxH5SFr6BTCK/sXnfIEfJeeE0317r7sSewBX3s+r3MLwsh+PDGMhIxJiDnKmdNM21/AWGa/f/NcLeQVt2Kc+nmF39p/2MLwcS92/UaCsJgWFtQiQ7+7kKHieTPaakm2vd2vu3s6rK1mJBpzS3wLLVq/E6JqUogJMR6HPv5MKd5Pa1z5YhoEeTqjyjFrc5QRQWcm1EaXNF4wEsXZNwk1ISqXWThMZz/Q3ujXLTlNSPZIu4l+dXiQPquvDS/QJheddTSFrvn4BQGMtN34HOZVavyEpOOeX4XVuC3O+GfUG9wNHjYJaOGi9RF70fVMVSa5JQ0vAWZvbhIwpJr30nU5tBgYJ3UnEL0A0kfSRporHDoXdVyTpMtJAgsxace9niqGyfHE7WfJxnNhdjyt/u5Srm7rOGrCZwoiO3r+EJkdheoENY2nequIpjG7bhE7Fk7Jzmn7Ih7pQuk9sk9++igk5b/XuEUEKa6EdkfsWLyN2ZkfJ/iIWOjL7XBaEPhSMvVbja9z9igCLwdDJWsz0d4H4f3+iIVLylxhVMHdIMlI1SLXm8NJH3yAzxIEMqILpbdOlUZhI2PKJWJZNYGBZ0uV,iv:WR0G1eMvVy0/wbpRfZMa7KHy3NxNnSNfd5ApdLSUta0=,tag:8LQaTemvCO9pPJrHX7oAqg==,type:str]
+    tls.key: ENC[AES256_GCM,data:U1KW+VrLwmQ9VfMogqDblUROKwDpSPD6l61CX6Rb6LDL13sM2JQ+BkYcDQasBkfbDRpwfEUH4SEUx3uZQT4OiCj9Zg9xRWhULHG6rA4drRJO+2HR3I6iIMR9TM6FEH7lzLxVfbhoptu9CjS4n1aXkXsDk0hqXYn6nCGgPuwa0hCT0uECAmXWZnFOkKiPvbvvRDOZQm+SCPyerkrd2NIbzj6Q7zpRSFyxrx+es2Dm3yLiLs7A0uv3ZBHKiuZ7hGQfujjt2SfGbXMR3xEd4fddLFf0Pro7mNtupvsdPUeJskRTOhuzRTr1gH/T/pwG4dAcoPxT7v0ZykRmL5mqAljXjGHmkLVcxPjC5WBzxjBuKEvHEk9uOQulm4aI08+1bIq5LAdnEmiMZgO86CqmNwOe8g==,iv:3vfqaGJCa8bCQillOr8JyMb3Buk1vh30XQpuD3Aukdg=,tag:FZ2BeDjHXiIEq1k28RfU0A==,type:str]
+sops:
+    age:
+        - recipient: age16lss7f9zugtgcnuvmct4evvllznxcewq7cr6vtmpm86v5fx0dvxshxum5f
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBjTzEzOG9iSHQwa0h3SGZl
+            eHE4MFQ0V0RwTUtZVkx3STI4R1FvOHNjRlNJClRHbHVSRHVWbm1nZ2d4SmhHN05u
+            NzJ4S2t5UHgxcmJtSzRhUE5GUzlubGsKLS0tIEl2elNtVlRjT2ZITTFCVWhvYzlQ
+            T2pJMTdPUUpQN3hiUlFMd0xlaVRubTQKxpw9+nobqHcXHZOtAppUb8lnhk7dKcnp
+            SuIau/+kO5x9syBJAUiToZfXQEXSZf9NunV3JZVJAfhkW0J3ZmZlYw==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2025-12-08T11:05:18Z"
+    mac: ENC[AES256_GCM,data:J25VjoPyDu0YFNZt/XVKceCjtS4dtYBfBSmwW0+okCoD3JizJCkf0BASS+VDcxq+TemsSxJ3XlUGMSfJnfTLqSKSwBdeeYbzWgFuSqEhgsJR7IFo4fKFR3qiwYtas3TfQfI0ZonY3sr19h9jEOwZQojB4g9MvUNlcMy/hpVY8xU=,iv:K9TwkMig0twp0rSgveq4h8VWoiSTnphqmD6mkTbBBkw=,tag:fIKLgdEQ2rhOG9+moZyG4g==,type:str]
+    encrypted_regex: ^(data|stringData)$
+    version: 3.11.0
