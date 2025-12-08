@@ -133,6 +133,25 @@ spec:
         - protocol: TCP
           port: 443
 ---
+# Allow Authentik → Kubernetes API node IP (for kube-router DNAT)
+# kube-router enforces policies AFTER DNAT, so 10.43.0.1:443 becomes node_ip:6443
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-authentik-to-kubeapi-node
+  namespace: authentik
+spec:
+  podSelector: {}  # All pods in authentik namespace (including sidecars)
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 188.245.88.79/32  # k3s node IP (DNAT target)
+      ports:
+        - protocol: TCP
+          port: 6443  # Kubernetes API actual port
+---
 # Allow Authentik → HTTPS egress (for OIDC discovery, webhooks, etc.)
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy

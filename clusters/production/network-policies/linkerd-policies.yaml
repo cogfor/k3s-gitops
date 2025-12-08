@@ -115,6 +115,25 @@ spec:
         - protocol: TCP
           port: 443
 ---
+# Allow Linkerd control plane → Kubernetes API node IP (for kube-router DNAT)
+# kube-router enforces policies AFTER DNAT, so 10.43.0.1:443 becomes node_ip:6443
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-linkerd-to-kubeapi-node
+  namespace: linkerd
+spec:
+  podSelector: {}  # All pods in linkerd namespace
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 188.245.88.79/32  # k3s node IP (DNAT target)
+      ports:
+        - protocol: TCP
+          port: 6443  # Kubernetes API actual port
+---
 # Allow Linkerd control plane → itself (intra-namespace communication)
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
