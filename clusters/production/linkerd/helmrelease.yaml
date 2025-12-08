@@ -47,7 +47,7 @@ spec:
 
     destinationResources:
       cpu:
-        request: 100m
+        request: 50m
         limit: 500m
       memory:
         request: 50Mi
