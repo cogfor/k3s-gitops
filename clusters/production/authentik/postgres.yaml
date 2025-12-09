@@ -18,6 +18,7 @@ spec:
         component: database
       annotations:
         linkerd.io/inject: enabled
+        config.linkerd.io/opaque-ports: "5432"
     spec:
       containers:
       - name: postgres
@@ -83,6 +84,8 @@ kind: Service
 metadata:
   name: postgres
   namespace: authentik
+  annotations:
+    config.linkerd.io/opaque-ports: "5432"
 spec:
   selector:
     app: postgres

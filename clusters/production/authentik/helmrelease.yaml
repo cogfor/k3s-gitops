@@ -42,6 +42,8 @@ spec:
     # Server replicas
     server:
       replicas: 1
+      podAnnotations:
+        config.linkerd.io/opaque-ports: "5432,6379,9300"
       envFrom:
         - secretRef:
             name: authentik-secrets
@@ -94,6 +96,8 @@ spec:
     # Worker configuration
     worker:
       replicas: 1
+      podAnnotations:
+        config.linkerd.io/opaque-ports: "5432,6379"
       envFrom:
         - secretRef:
             name: authentik-secrets
