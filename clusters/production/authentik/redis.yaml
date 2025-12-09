@@ -17,8 +17,7 @@ spec:
         app: redis
         component: cache
       annotations:
-        linkerd.io/inject: enabled
-        config.linkerd.io/opaque-ports: "6379"
+        linkerd.io/inject: "disabled"
     spec:
       containers:
       - name: redis
@@ -86,8 +85,6 @@ kind: Service
 metadata:
   name: redis
   namespace: authentik
-  annotations:
-    config.linkerd.io/opaque-ports: "6379"
 spec:
   selector:
     app: redis
