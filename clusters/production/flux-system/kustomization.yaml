@@ -38,3 +38,13 @@ patches:
     target:
       kind: Deployment
       name: kustomize-controller
+  - patch: |-
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: flux-system
+        annotations:
+          linkerd.io/inject: enabled
+    target:
+      kind: Namespace
+      name: flux-system

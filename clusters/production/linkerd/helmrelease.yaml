@@ -63,6 +63,18 @@ spec:
           request: 15Mi
           limit: 64Mi
 
+    proxyInjector:
+      namespaceSelector:
+        matchExpressions:
+          - key: config.linkerd.io/admission-webhooks
+            operator: NotIn
+            values:
+              - disabled
+          - key: kubernetes.io/metadata.name
+            operator: NotIn
+            values:
+              - kube-system
+
     # Disable HA mode (single node cluster)
     controllerReplicas: 1
     enablePodAntiAffinity: false
