@@ -16,6 +16,8 @@ spec:
       labels:
         app: redis
         component: cache
+      annotations:
+        linkerd.io/inject: enabled
     spec:
       containers:
       - name: redis

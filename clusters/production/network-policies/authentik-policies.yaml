@@ -64,16 +64,15 @@ spec:
         - protocol: TCP
           port: 6379
 ---
-# Allow Authentik → DNS (kube-system)
+# Allow all pods in authentik namespace → DNS (kube-system)
+# Required for Linkerd sidecars to resolve control plane services
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: allow-authentik-to-dns
   namespace: authentik
 spec:
-  podSelector:
-    matchLabels:
-      app.kubernetes.io/name: authentik
+  podSelector: {}  # All pods in authentik namespace (server, worker, postgres, redis, ldap outpost)
   policyTypes:
     - Egress
   egress:
@@ -241,32 +240,6 @@ spec:
       ports:
         - protocol: TCP
           port: 9000  # Authentik HTTP API
----
-# Allow LDAP outpost → DNS (kube-system)
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: allow-ldap-outpost-to-dns
-  namespace: authentik
-spec:
-  podSelector:
-    matchLabels:
-      app: authentik-ldap-outpost
-  policyTypes:
-    - Egress
-  egress:
-    - to:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: kube-system
-          podSelector:
-            matchLabels:
-              k8s-app: kube-dns
-      ports:
-        - protocol: UDP
-          port: 53
-        - protocol: TCP
-          port: 53
 ---
 # Allow Authentik server → LDAP outpost (ingress)
 # For health checks and management
