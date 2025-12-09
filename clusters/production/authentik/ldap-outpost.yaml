@@ -18,7 +18,7 @@ spec:
       labels:
         app: authentik-ldap-outpost
       annotations:
-        linkerd.io/inject: enabled  # Enable Linkerd sidecar for mTLS
+        linkerd.io/inject: disabled  # Disable Linkerd - Authentik server doesn't have it
     spec:
       containers:
         - name: ldap
