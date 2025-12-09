@@ -12,4 +12,3 @@ resources:
   - ldap-issuer.yaml
   - ldap-certificate.yaml
   - ldap-outpost.yaml
-  - linkerd-policy.yaml
