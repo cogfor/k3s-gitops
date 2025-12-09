@@ -1,0 +1,54 @@
+---
+apiVersion: policy.linkerd.io/v1beta1
+kind: Server
+metadata:
+  name: postgres
+  namespace: authentik
+spec:
+  podSelector:
+    matchLabels:
+      app: postgres
+      component: database
+  port: 5432
+  proxyProtocol: TLS
+---
+apiVersion: policy.linkerd.io/v1beta1
+kind: ServerAuthorization
+metadata:
+  name: postgres-authentik
+  namespace: authentik
+spec:
+  server:
+    name: postgres
+  client:
+    meshTLS:
+      serviceAccounts:
+        - name: default
+          namespace: authentik
+---
+apiVersion: policy.linkerd.io/v1beta1
+kind: Server
+metadata:
+  name: redis
+  namespace: authentik
+spec:
+  podSelector:
+    matchLabels:
+      app: redis
+      component: cache
+  port: 6379
+  proxyProtocol: TLS
+---
+apiVersion: policy.linkerd.io/v1beta1
+kind: ServerAuthorization
+metadata:
+  name: redis-authentik
+  namespace: authentik
+spec:
+  server:
+    name: redis
+  client:
+    meshTLS:
+      serviceAccounts:
+        - name: default
+          namespace: authentik

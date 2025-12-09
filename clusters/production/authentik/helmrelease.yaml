@@ -43,7 +43,8 @@ spec:
     server:
       replicas: 1
       podAnnotations:
-        linkerd.io/inject: "disabled"
+        linkerd.io/inject: enabled
+        config.linkerd.io/opaque-ports: "5432,6379,9300"
       envFrom:
         - secretRef:
             name: authentik-secrets
@@ -97,7 +98,8 @@ spec:
     worker:
       replicas: 1
       podAnnotations:
-        linkerd.io/inject: "disabled"
+        linkerd.io/inject: enabled
+        config.linkerd.io/opaque-ports: "5432,6379"
       envFrom:
         - secretRef:
             name: authentik-secrets
