@@ -64,6 +64,8 @@ spec:
               key: postgres-password
         - name: AUTHENTIK_POSTGRESQL__USE_SSL
           value: "false"
+        - name: AUTHENTIK_POSTGRESQL__OPTIONS__sslmode
+          value: disable
         - name: AUTHENTIK_REDIS__HOST
           value: "redis"
         - name: AUTHENTIK_REDIS__PASSWORD
@@ -114,6 +116,8 @@ spec:
               key: postgres-password
         - name: AUTHENTIK_POSTGRESQL__USE_SSL
           value: "false"
+        - name: AUTHENTIK_POSTGRESQL__OPTIONS__sslmode
+          value: disable
         - name: AUTHENTIK_REDIS__HOST
           value: "redis"
         - name: AUTHENTIK_REDIS__PASSWORD
