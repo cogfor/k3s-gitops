@@ -241,7 +241,7 @@ spec:
               app.kubernetes.io/name: authentik
       ports:
         - protocol: TCP
-          port: 9000  # Authentik HTTP API
+          port: 80  # Authentik service HTTP port (forwards to pod port 9000)
 ---
 # Allow Authentik server → LDAP outpost (ingress)
 # For health checks and management
