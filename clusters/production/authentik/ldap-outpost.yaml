@@ -37,7 +37,7 @@ spec:
           env:
             # Authentik server connection
             - name: AUTHENTIK_HOST
-              value: "http://authentik-server:9000"
+              value: "http://authentik-server:80"
             - name: AUTHENTIK_INSECURE
               value: "false"
             - name: AUTHENTIK_TOKEN
