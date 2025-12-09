@@ -191,9 +191,9 @@ spec:
     - Ingress
   ingress:
     - from:
-        - podSelector:
+        - namespaceSelector:
             matchLabels:
-              app.kubernetes.io/name: authentik
+              kubernetes.io/metadata.name: authentik
       ports:
         - protocol: TCP
           port: 5432
@@ -212,9 +212,9 @@ spec:
     - Ingress
   ingress:
     - from:
-        - podSelector:
+        - namespaceSelector:
             matchLabels:
-              app.kubernetes.io/name: authentik
+              kubernetes.io/metadata.name: authentik
       ports:
         - protocol: TCP
           port: 6379
