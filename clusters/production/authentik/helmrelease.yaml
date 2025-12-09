@@ -62,6 +62,8 @@ spec:
             secretKeyRef:
               name: authentik-secrets
               key: postgres-password
+        - name: AUTHENTIK_POSTGRESQL__USE_SSL
+          value: "false"
         - name: AUTHENTIK_REDIS__HOST
           value: "redis"
         - name: AUTHENTIK_REDIS__PASSWORD
@@ -110,6 +112,8 @@ spec:
             secretKeyRef:
               name: authentik-secrets
               key: postgres-password
+        - name: AUTHENTIK_POSTGRESQL__USE_SSL
+          value: "false"
         - name: AUTHENTIK_REDIS__HOST
           value: "redis"
         - name: AUTHENTIK_REDIS__PASSWORD
