@@ -12,3 +12,5 @@ resources:
   - ldap-issuer.yaml
   - ldap-certificate.yaml
   - ldap-outpost.yaml
+  - ldap-tailscale-service.yaml
+  - authentik-server-direct.yaml

@@ -21,8 +21,9 @@ metadata:
   namespace: tailscale
 spec:
   hostname: authentik-ldap
+  tags:
+    - tag:tailscale
   subnetRoutes: []
   serviceRef:
     namespace: authentik
     name: authentik-ldap-tailscale
-  # Adjust if you want to force Funnel etc.

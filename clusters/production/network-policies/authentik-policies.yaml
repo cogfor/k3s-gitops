@@ -260,9 +260,56 @@ spec:
         - podSelector:
             matchLabels:
               app.kubernetes.io/name: authentik
+        - ipBlock:
+            cidr: 10.43.0.0/16  # Service network for authentik-server ClusterIP (kube-router enforces pre-DNAT)
+        - ipBlock:
+            cidr: 10.42.0.0/16  # Pod network for authentik-server endpoints (kube-router enforces post-DNAT)
       ports:
         - protocol: TCP
-          port: 80  # Authentik service HTTP port (forwards to pod port 9000)
+          port: 80    # Service HTTP port
+        - protocol: TCP
+          port: 443   # Service HTTPS port
+        - protocol: TCP
+          port: 9000  # Pod HTTP port
+        - protocol: TCP
+          port: 9443  # Pod HTTPS port
+---
+# Allow Tailscale clients (e.g., mail server) ↔ LDAP outpost
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-tailscale-to-ldap-outpost
+  namespace: authentik
+spec:
+  podSelector:
+    matchLabels:
+      app: authentik-ldap-outpost
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - ipBlock:
+            cidr: 100.64.0.0/10  # Tailscale IPv4 range
+      ports:
+        - protocol: TCP
+          port: 3389
+        - protocol: TCP
+          port: 6636
+    - from:
+        - ipBlock:
+            cidr: fd7a:115c:a1e0::/48  # Tailscale IPv6 range
+      ports:
+        - protocol: TCP
+          port: 3389
+        - protocol: TCP
+          port: 6636
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 100.64.0.0/10
+        - ipBlock:
+            cidr: fd7a:115c:a1e0::/48
 ---
 # Allow Authentik server → LDAP outpost (ingress)
 # For health checks and management

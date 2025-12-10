@@ -18,3 +18,5 @@ spec:
     - ldap.authentik.svc.cluster.local
     - ldap.primed.io
     - k3s.primed.io
+    - k3s-primed.tail6cd0b8.ts.net
+    - k3s-primed

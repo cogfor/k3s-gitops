@@ -18,7 +18,8 @@ spec:
       labels:
         app: authentik-ldap-outpost
       annotations:
-        linkerd.io/inject: disabled  # Disable Linkerd - Authentik server doesn't have it
+        linkerd.io/inject: disabled  # Keep outpost unmanaged by Linkerd
+        config.linkerd.io/opaque-ports: "3389,6636,9300"  # If injected anyway, treat LDAP/LDAPS as opaque
     spec:
       containers:
         - name: ldap
@@ -37,7 +38,7 @@ spec:
           env:
             # Authentik server connection
             - name: AUTHENTIK_HOST
-              value: "http://authentik-server:80"
+              value: "http://authentik-server-direct.authentik.svc.cluster.local:9000"
             - name: AUTHENTIK_INSECURE
               value: "false"
             - name: AUTHENTIK_TOKEN
@@ -105,6 +106,7 @@ metadata:
     app: authentik-ldap-outpost
 spec:
   type: NodePort
+  externalTrafficPolicy: Local
   selector:
     app: authentik-ldap-outpost
   ports:
