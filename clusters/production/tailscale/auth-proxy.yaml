@@ -13,17 +13,8 @@ metadata:
   annotations:
     kubernetes.io/service-account.name: tailscale-auth
 type: kubernetes.io/service-account-token
----
-apiVersion: tailscale.com/v1alpha1
-kind: Connector
-metadata:
-  name: authentik-ldap
-  namespace: tailscale
-spec:
-  hostname: authentik-ldap
-  tags:
-    - tag:tailscale
-  subnetRoutes: []
-  serviceRef:
-    namespace: authentik
-    name: authentik-ldap-tailscale
+# Connector is not needed for exposing services.
+# Services are exposed via annotations on the Service resource itself.
+# See: clusters/production/authentik/ldap-tailscale-service.yaml
+#
+# This file can be used later if you want to set up subnet routing or exit nodes.

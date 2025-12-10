@@ -6,4 +6,3 @@ resources:
   - namespace.yaml
   - operator.yaml
   - oauth-secret.yaml
-  - auth-proxy.yaml
