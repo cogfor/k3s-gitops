@@ -6,4 +6,4 @@ metadata:
   annotations:
     linkerd.io/inject: enabled
   labels:
-    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/enforce: privileged  # Required for Promtail hostPath volumes

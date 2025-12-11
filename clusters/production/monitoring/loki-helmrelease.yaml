@@ -61,7 +61,6 @@ spec:
 
       # Pod labels for Kyverno policy compliance
       podLabels:
-        app: loki
         owner: platform
 
       resources:
@@ -85,7 +84,6 @@ spec:
       enabled: true
       replicas: 1
       podLabels:
-        app: loki-gateway
         owner: platform
       resources:
         requests:

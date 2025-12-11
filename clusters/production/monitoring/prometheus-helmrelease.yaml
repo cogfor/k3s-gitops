@@ -43,7 +43,6 @@ spec:
         # Pod labels for Kyverno policy compliance
         podMetadata:
           labels:
-            app: prometheus
             owner: platform
 
     # Alertmanager settings
@@ -70,7 +69,6 @@ spec:
         # Pod labels for Kyverno policy compliance
         podMetadata:
           labels:
-            app: alertmanager
             owner: platform
 
       config:
@@ -164,13 +162,11 @@ spec:
 
       # Pod labels for Kyverno policy compliance
       podLabels:
-        app: grafana
         owner: platform
 
     # Operator pod labels
     prometheusOperator:
       podLabels:
-        app: prometheus-operator
         owner: platform
       resources:
         requests:
@@ -183,7 +179,6 @@ spec:
     # Kube-state-metrics pod labels
     kube-state-metrics:
       podLabels:
-        app: kube-state-metrics
         owner: platform
       resources:
         requests:
@@ -197,7 +192,6 @@ spec:
     nodeExporter:
       enabled: true
       podLabels:
-        app: node-exporter
         owner: platform
       resources:
         requests:

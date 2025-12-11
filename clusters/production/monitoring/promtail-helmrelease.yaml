@@ -45,7 +45,6 @@ spec:
 
     # Pod labels for Kyverno policy compliance
     podLabels:
-      app: promtail
       owner: platform
 
     resources:
