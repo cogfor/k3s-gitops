@@ -31,6 +31,7 @@ spec:
                 - traefik          # Ingress controller
                 - tailscale        # VPN infrastructure
                 - flux-system      # GitOps infrastructure
+                - monitoring       # Monitoring infrastructure
       validate:
         message: >-
           CPU and memory resource requests and limits are required.

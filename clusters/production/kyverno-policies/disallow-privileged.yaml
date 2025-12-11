@@ -49,6 +49,7 @@ spec:
                 - kube-system
                 - kyverno
                 - tailscale        # VPN may use hostPath for state persistence
+                - monitoring       # Promtail needs hostPath for audit logs
       validate:
         message: "HostPath volumes are not allowed."
         pattern:
