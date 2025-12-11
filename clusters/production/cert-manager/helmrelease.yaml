@@ -24,5 +24,33 @@ spec:
     global:
       leaderElection:
         namespace: cert-manager
+      podLabels:
+        owner: platform
+    # Resource limits for cert-manager controller
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+    # Resource limits for webhook
+    webhook:
+      resources:
+        requests:
+          cpu: 20m
+          memory: 32Mi
+        limits:
+          cpu: 100m
+          memory: 128Mi
+    # Resource limits for cainjector
+    cainjector:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          cpu: 200m
+          memory: 256Mi
     prometheus:
       enabled: false

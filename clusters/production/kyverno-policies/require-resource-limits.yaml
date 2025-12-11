@@ -26,6 +26,11 @@ spec:
           - resources:
               namespaces:
                 - kube-system
+                - kyverno          # Policy engine infrastructure
+                - linkerd          # Service mesh infrastructure
+                - traefik          # Ingress controller
+                - tailscale        # VPN infrastructure
+                - flux-system      # GitOps infrastructure
       validate:
         message: >-
           CPU and memory resource requests and limits are required.

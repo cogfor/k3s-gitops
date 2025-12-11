@@ -24,6 +24,9 @@ spec:
           - resources:
               namespaces:
                 - kube-system
+                - kyverno           # Kyverno uses ghcr.io/kyverno images
+                - tailscale         # Tailscale uses docker.io/tailscale images (implicit registry)
+                - default           # Exclude default namespace from policy (admin/debug workloads)
       validate:
         message: >-
           Images must come from approved registries:

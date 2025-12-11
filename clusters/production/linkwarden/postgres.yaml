@@ -14,10 +14,11 @@ spec:
     metadata:
       labels:
         app: postgres
+        owner: platform
     spec:
       containers:
       - name: postgres
-        image: postgres:16-alpine
+        image: docker.io/postgres:16-alpine
         env:
         - name: POSTGRES_DB
           value: linkwarden

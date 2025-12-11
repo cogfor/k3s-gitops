@@ -15,13 +15,14 @@ spec:
     metadata:
       labels:
         app: redis
+        owner: platform
         component: cache
       annotations:
         linkerd.io/inject: "disabled"
     spec:
       containers:
       - name: redis
-        image: redis:8.2-alpine
+        image: docker.io/redis:8.2-alpine
         command:
         - redis-server
         - --requirepass

@@ -15,13 +15,14 @@ spec:
     metadata:
       labels:
         app: postgres
+        owner: platform
         component: database
       annotations:
         linkerd.io/inject: "disabled"
     spec:
       containers:
       - name: postgres
-        image: postgres:18-alpine
+        image: docker.io/postgres:18-alpine
         env:
         - name: POSTGRES_DB
           value: authentik

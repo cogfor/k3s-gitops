@@ -25,6 +25,7 @@ spec:
               namespaces:
                 - kube-system
                 - kyverno
+                - tailscale        # VPN requires privileged init container
       validate:
         message: "Privileged containers are not allowed."
         pattern:
@@ -47,6 +48,7 @@ spec:
               namespaces:
                 - kube-system
                 - kyverno
+                - tailscale        # VPN may use hostPath for state persistence
       validate:
         message: "HostPath volumes are not allowed."
         pattern:
