@@ -35,8 +35,6 @@ spec:
 
       # Multi-tenancy configuration
       limits_config:
-        # Allow mail-server tenant to send logs
-        enforce_metric_name: false
         reject_old_samples: true
         reject_old_samples_max_age: 168h  # 7 days
         ingestion_rate_mb: 10  # 10MB/s max from mail server
