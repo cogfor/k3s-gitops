@@ -96,7 +96,8 @@ spec:
             optional: true  # Will create self-signed cert if not exists
 
 ---
-# Service exposing LDAPS via NodePort
+# Service for internal cluster access (no external exposure)
+# External access handled by Tailscale operator via authentik-ldap-tailscale service
 apiVersion: v1
 kind: Service
 metadata:
@@ -105,15 +106,13 @@ metadata:
   labels:
     app: authentik-ldap-outpost
 spec:
-  type: NodePort
-  externalTrafficPolicy: Local
+  type: ClusterIP
   selector:
     app: authentik-ldap-outpost
   ports:
     - name: ldaps
       port: 636
       targetPort: 6636
-      nodePort: 30636
       protocol: TCP
     - name: ldap
       port: 389
