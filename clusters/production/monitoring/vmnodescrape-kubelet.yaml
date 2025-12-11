@@ -1,0 +1,18 @@
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMNodeScrape
+metadata:
+  name: kubelet
+  labels:
+    owner: platform
+spec:
+  scheme: https
+  bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+  tlsConfig:
+    insecureSkipVerify: true
+    caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+  endpoints:
+    - port: "10250"
+      path: /metrics
+    - port: "10250"
+      path: /metrics/cadvisor

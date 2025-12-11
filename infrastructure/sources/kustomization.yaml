@@ -8,3 +8,4 @@ resources:
   - linkerd.yaml
   - prometheus.yaml
   - grafana.yaml
+  - victoria-metrics.yaml

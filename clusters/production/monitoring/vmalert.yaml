@@ -1,0 +1,25 @@
+---
+apiVersion: operator.victoriametrics.com/v1beta1
+kind: VMAlert
+metadata:
+  name: vmalert
+  namespace: monitoring
+  labels:
+    owner: platform
+spec:
+  evaluationInterval: 30s
+  datasource:
+    url: http://vmstorage:8428
+  notifiers: []  # wire to Alertmanager once ready
+  ruleSelector: {}
+  ruleNamespaceSelector: {}
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  podMetadata:
+    annotations:
+      linkerd.io/inject: "disabled"

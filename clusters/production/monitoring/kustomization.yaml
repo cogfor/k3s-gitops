@@ -3,10 +3,18 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - namespace.yaml
-  - prometheus-scrape-configs-secret.yaml  # SOPS-encrypted
-  - alertmanager-smtp-secret.yaml  # SOPS-encrypted
   - loki-auth-secret.yaml  # SOPS-encrypted
-  - prometheus-helmrelease.yaml
+  - victoria-operator-helmrelease.yaml
+  - vmsingle.yaml
+  - vmagent-rbac.yaml
+  - vmagent.yaml
+  - vmnodescrape-kubelet.yaml
+  - vmservicescrape-apiserver.yaml
+  - kube-state-metrics-helmrelease.yaml
+  - vmservicescrape-kube-state-metrics.yaml
+  - vmrule-custom-alerts.yaml
+  - vmalert.yaml
+  - grafana-helmrelease.yaml
   - loki-helmrelease.yaml
   - promtail-helmrelease.yaml
-  - alerts.yaml
+  - admission-serviceaccount.yaml
