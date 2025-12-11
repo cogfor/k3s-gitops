@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: ldap
-          image: ghcr.io/goauthentik/ldap:2024.8.3
+          image: ghcr.io/goauthentik/ldap:2025.10.2
           imagePullPolicy: IfNotPresent
           ports:
             - name: ldaps
