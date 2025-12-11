@@ -2555,7 +2555,7 @@ spec:
             containers:
                 - env:
                     - name: OPERATOR_INITIAL_TAGS
-                      value: tag:k8s-operator
+                      value: tag:tailscale
                     - name: OPERATOR_HOSTNAME
                       value: tailscale-operator
                     - name: OPERATOR_SECRET
