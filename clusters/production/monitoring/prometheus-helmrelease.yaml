@@ -1,0 +1,205 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kube-prometheus-stack
+  namespace: monitoring
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: kube-prometheus-stack
+      version: ">=65.0.0"
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: flux-system
+  values:
+    # Prometheus settings
+    prometheus:
+      prometheusSpec:
+        retention: 30d
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 20Gi
+        resources:
+          requests:
+            cpu: 200m
+            memory: 400Mi
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+
+        # Reference the additional scrape configs secret
+        additionalScrapeConfigsSecret:
+          enabled: true
+          name: prometheus-additional-scrape-configs
+          key: additional-scrape-configs.yaml
+
+        # Pod labels for Kyverno policy compliance
+        podMetadata:
+          labels:
+            app: prometheus
+            owner: platform
+
+    # Alertmanager settings
+    alertmanager:
+      alertmanagerSpec:
+        # Mount SMTP password secret
+        secrets:
+          - alertmanager-smtp-password
+        storage:
+          volumeClaimTemplate:
+            spec:
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                requests:
+                  storage: 10Gi
+        resources:
+          requests:
+            cpu: 50m
+            memory: 100Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+
+        # Pod labels for Kyverno policy compliance
+        podMetadata:
+          labels:
+            app: alertmanager
+            owner: platform
+
+      config:
+        global:
+          resolve_timeout: 5m
+          smtp_smarthost: 'mail.primed.io:465'
+          smtp_from: 'alerts@primed.io'
+          smtp_auth_username: 'alerts@primed.io'
+          smtp_auth_password_file: '/etc/alertmanager/secrets/alertmanager-smtp-password/smtp-password'
+          smtp_require_tls: true
+
+        route:
+          group_by: ['alertname', 'cluster', 'service']
+          group_wait: 10s
+          group_interval: 10s
+          repeat_interval: 12h
+          receiver: 'email'
+
+        receivers:
+        - name: 'email'
+          email_configs:
+          - to: 'rene@primed.io'
+            send_resolved: true
+
+    # Grafana settings with Authentik OAuth
+    grafana:
+      # Disable admin password (using OAuth only)
+      # Keep admin user active as fallback with secure random password
+      adminPassword: "$(openssl rand -base64 32)"
+
+      ingress:
+        enabled: true
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+        hosts:
+        - grafana.primed.io
+        tls:
+        - secretName: grafana-tls
+          hosts:
+          - grafana.primed.io
+
+      # Authentik OAuth configuration
+      env:
+        GF_AUTH_GENERIC_OAUTH_ENABLED: "true"
+        GF_AUTH_GENERIC_OAUTH_NAME: "Authentik"
+        GF_AUTH_GENERIC_OAUTH_CLIENT_ID: "HaGng4gJXBsZs6lgoNAot9OvDQdWTTDIkvjflR0t"
+        GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET: "zcpP7sjjE7phwu3SP7l1UpI1EzCELZz1BEkPv67FE7ywCmjg8aUZfqutNc5dCiWcrfw9m2XVaPx6zFzCaO6aZ43Lb9iFiuqHZTHdanFQn5DEMra6gTwDqyeMMNoGlI4B"
+        GF_AUTH_GENERIC_OAUTH_SCOPES: "openid profile email"
+        GF_AUTH_GENERIC_OAUTH_AUTH_URL: "https://authentik.primed.io/application/o/authorize/"
+        GF_AUTH_GENERIC_OAUTH_TOKEN_URL: "https://authentik.primed.io/application/o/token/"
+        GF_AUTH_GENERIC_OAUTH_API_URL: "https://authentik.primed.io/application/o/userinfo/"
+        GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP: "true"
+        GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: "contains(groups[*], 'Grafana Admins') && 'Admin' || contains(groups[*], 'Grafana Editors') && 'Editor' || 'Viewer'"
+        GF_AUTH_SIGNOUT_REDIRECT_URL: "https://authentik.primed.io/application/o/grafana/end-session/"
+
+      datasources:
+        datasources.yaml:
+          apiVersion: 1
+          datasources:
+          - name: Prometheus
+            type: prometheus
+            url: http://kube-prometheus-stack-prometheus:9090
+            isDefault: true
+          - name: Loki
+            type: loki
+            url: http://loki:3100
+
+      dashboardProviders:
+        dashboardproviders.yaml:
+          apiVersion: 1
+          providers:
+          - name: 'linkerd'
+            orgId: 1
+            folder: 'Linkerd'
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/linkerd
+
+      resources:
+        requests:
+          cpu: 100m
+          memory: 200Mi
+        limits:
+          cpu: 500m
+          memory: 512Mi
+
+      # Pod labels for Kyverno policy compliance
+      podLabels:
+        app: grafana
+        owner: platform
+
+    # Operator pod labels
+    prometheusOperator:
+      podLabels:
+        app: prometheus-operator
+        owner: platform
+      resources:
+        requests:
+          cpu: 100m
+          memory: 100Mi
+        limits:
+          cpu: 200m
+          memory: 256Mi
+
+    # Kube-state-metrics pod labels
+    kube-state-metrics:
+      podLabels:
+        app: kube-state-metrics
+        owner: platform
+      resources:
+        requests:
+          cpu: 50m
+          memory: 100Mi
+        limits:
+          cpu: 100m
+          memory: 200Mi
+
+    # Node exporter (skip for single-node, already covered by Prometheus)
+    nodeExporter:
+      enabled: true
+      podLabels:
+        app: node-exporter
+        owner: platform
+      resources:
+        requests:
+          cpu: 50m
+          memory: 50Mi
+        limits:
+          cpu: 100m
+          memory: 100Mi

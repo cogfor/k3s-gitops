@@ -6,3 +6,5 @@ resources:
   - authentik.yaml
   - kyverno.yaml
   - linkerd.yaml
+  - prometheus.yaml
+  - grafana.yaml

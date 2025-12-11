@@ -1,0 +1,57 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: promtail
+  namespace: monitoring
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: promtail
+      version: ">=6.0.0"
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: flux-system
+  values:
+    config:
+      clients:
+      - url: http://loki-gateway/loki/api/v1/push
+        tenant_id: k8s-cluster
+
+      snippets:
+        extraScrapeConfigs: |
+          # Kubernetes API audit logs (requires hostPath mount below)
+          - job_name: kubernetes-audit
+            static_configs:
+            - targets:
+                - localhost
+              labels:
+                job: kubernetes-audit
+                __path__: /host/k3s/logs/audit.log
+
+    # CRITICAL: Mount host directories to access audit logs and pod logs
+    extraVolumes:
+      - name: k3s-logs
+        hostPath:
+          path: /var/lib/rancher/k3s/server/logs
+          type: Directory
+
+    extraVolumeMounts:
+      - name: k3s-logs
+        mountPath: /host/k3s/logs
+        readOnly: true
+
+    # Pod labels for Kyverno policy compliance
+    podLabels:
+      app: promtail
+      owner: platform
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi

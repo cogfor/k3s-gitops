@@ -1,0 +1,96 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: loki
+  namespace: monitoring
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: loki
+      version: ">=6.0.0"
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: flux-system
+  values:
+    deploymentMode: SingleBinary
+
+    loki:
+      auth_enabled: true  # Enable authentication for mail server tenant
+      commonConfig:
+        replication_factor: 1
+      storage:
+        type: 'filesystem'
+      schemaConfig:
+        configs:
+        - from: 2024-01-01
+          store: tsdb
+          object_store: filesystem
+          schema: v13
+          index:
+            prefix: loki_index_
+            period: 24h
+
+      # Multi-tenancy configuration
+      limits_config:
+        # Allow mail-server tenant to send logs
+        enforce_metric_name: false
+        reject_old_samples: true
+        reject_old_samples_max_age: 168h  # 7 days
+        ingestion_rate_mb: 10  # 10MB/s max from mail server
+        ingestion_burst_size_mb: 20
+
+    singleBinary:
+      replicas: 1
+      persistence:
+        enabled: true
+        size: 30Gi
+
+      # Mount auth secret
+      extraVolumes:
+        - name: loki-auth-token
+          secret:
+            secretName: loki-auth-token
+
+      extraVolumeMounts:
+        - name: loki-auth-token
+          mountPath: /etc/loki/auth
+          readOnly: true
+
+      # Pod labels for Kyverno policy compliance
+      podLabels:
+        app: loki
+        owner: platform
+
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          cpu: 500m
+          memory: 1Gi
+
+    # Disable other components (single binary mode)
+    backend:
+      replicas: 0
+    read:
+      replicas: 0
+    write:
+      replicas: 0
+
+    # Gateway for handling authentication
+    gateway:
+      enabled: true
+      replicas: 1
+      podLabels:
+        app: loki-gateway
+        owner: platform
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          cpu: 100m
+          memory: 128Mi

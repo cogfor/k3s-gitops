@@ -1,0 +1,106 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: custom-alerts
+  namespace: monitoring
+  labels:
+    app: kube-prometheus-stack
+data:
+  alerts.yaml: |
+    groups:
+    - name: authentik
+      interval: 30s
+      rules:
+      - alert: AuthentikDown
+        expr: up{job="authentik-server"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Authentik is down"
+          description: "Authentik has been down for more than 2 minutes"
+
+    - name: mail
+      interval: 30s
+      rules:
+      - alert: PostfixExporterDown
+        expr: up{job="mail-server-postfix"} == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Mail server Postfix exporter is down"
+          description: "Cannot collect mail server metrics"
+
+      - alert: PostfixQueueBacklog
+        expr: postfix_queue_size{queue="deferred"} > 100
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Postfix queue backlog"
+          description: "Deferred queue size: {{ $value }}"
+
+    - name: cluster
+      interval: 30s
+      rules:
+      - alert: HighCPUUsage
+        expr: (1 - avg(rate(node_cpu_seconds_total{mode="idle"}[5m]))) > 0.9
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage"
+          description: "CPU usage is above 90%"
+
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) > 0.9
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage"
+          description: "Memory usage is above 90%"
+
+      - alert: DiskSpaceLow
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Disk space low"
+          description: "Disk space below 10%"
+
+      - alert: CertificateExpiringSoon
+        expr: (certmanager_certificate_expiration_timestamp_seconds - time()) / 86400 < 14
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "Certificate expiring soon"
+          description: "Certificate {{ $labels.name }} expires in {{ $value }} days"
+
+    - name: kyverno
+      interval: 30s
+      rules:
+      - alert: PolicyViolations
+        expr: increase(kyverno_policy_results_total{result="fail"}[1h]) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High policy violation rate"
+          description: "{{ $value }} policy violations in the last hour"
+
+    - name: linkerd
+      interval: 30s
+      rules:
+      - alert: LinkerdHighErrorRate
+        expr: sum(rate(response_total{classification="failure"}[1m])) by (deployment) / sum(rate(response_total[1m])) by (deployment) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate in {{ $labels.deployment }}"
+          description: "Error rate: {{ $value | humanizePercentage }}"
