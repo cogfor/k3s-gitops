@@ -30,6 +30,7 @@ spec:
                 - linkerd          # Service mesh infrastructure
                 - traefik          # Ingress controller
                 - tailscale        # VPN infrastructure
+                - monitoring       # Monitoring infrastructure
       validate:
         message: "Resources must have 'app' and 'owner' labels."
         pattern:
