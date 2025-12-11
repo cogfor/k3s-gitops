@@ -103,17 +103,20 @@ spec:
 
       ingress:
         enabled: true
+        ingressClassName: tailscale
         annotations:
-          cert-manager.io/cluster-issuer: letsencrypt-prod
+          tailscale.com/funnel: "false"  # Private to Tailscale network only
         hosts:
-        - grafana.primed.io
+        - grafana-monitoring
         tls:
-        - secretName: grafana-tls
-          hosts:
-          - grafana.primed.io
+        - hosts:
+          - grafana-monitoring
 
       # Authentik OAuth configuration
+      # NOTE: Update Authentik OAuth provider redirect URL to: https://grafana-monitoring.tail<hash>.ts.net/login/generic_oauth
+      # Get the actual Tailscale hostname with: kubectl get ingress -n monitoring
       env:
+        GF_SERVER_ROOT_URL: "https://grafana-monitoring"  # Will be auto-completed by Tailscale
         GF_AUTH_GENERIC_OAUTH_ENABLED: "true"
         GF_AUTH_GENERIC_OAUTH_NAME: "Authentik"
         GF_AUTH_GENERIC_OAUTH_CLIENT_ID: "HaGng4gJXBsZs6lgoNAot9OvDQdWTTDIkvjflR0t"
