@@ -10,7 +10,7 @@ metadata:
       Privileged containers run as root and can access host resources.
       This policy blocks privileged containers and hostPath volumes.
 spec:
-  validationFailureAction: Audit
+  validationFailureAction: Enforce  # Switched from Audit to Enforce - Phase 6 complete
   background: true
   rules:
     - name: check-privileged

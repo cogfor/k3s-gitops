@@ -10,7 +10,7 @@ metadata:
       Only allow container images from approved registries
       to prevent supply chain attacks.
 spec:
-  validationFailureAction: Audit
+  validationFailureAction: Enforce  # Switched from Audit to Enforce - Phase 6 complete
   background: true
   rules:
     - name: check-registries

@@ -10,7 +10,7 @@ metadata:
       Require CPU and memory requests/limits on all containers
       to prevent resource exhaustion.
 spec:
-  validationFailureAction: Audit
+  validationFailureAction: Enforce  # Switched from Audit to Enforce - Phase 6 complete
   background: true
   rules:
     - name: check-container-resources

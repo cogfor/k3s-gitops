@@ -10,7 +10,7 @@ metadata:
       Require 'app' and 'owner' labels on Deployments and StatefulSets
       to ensure resource ownership and organization.
 spec:
-  validationFailureAction: Audit  # Start in audit mode
+  validationFailureAction: Enforce  # Switched from Audit to Enforce - Phase 6 complete
   background: true  # Scan existing resources
   rules:
     - name: check-for-labels
