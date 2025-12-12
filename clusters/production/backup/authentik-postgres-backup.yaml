@@ -15,7 +15,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: backup
-            image: postgres:18-alpine
+            image: docker.io/postgres:18-alpine
             command:
             - /bin/sh
             - -c
