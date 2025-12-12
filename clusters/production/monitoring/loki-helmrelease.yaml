@@ -42,6 +42,7 @@ spec:
 
     singleBinary:
       replicas: 1
+      priorityClassName: monitoring
       persistence:
         enabled: true
         size: 30Gi

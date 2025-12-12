@@ -42,6 +42,7 @@ spec:
     # Server replicas
     server:
       replicas: 1
+      priorityClassName: system-critical
       podAnnotations:
         linkerd.io/inject: "disabled"
       envFrom:
@@ -88,7 +89,7 @@ spec:
       resources:
         requests:
           cpu: 200m
-          memory: 512Mi
+          memory: 256Mi
         limits:
           cpu: 1000m
           memory: 1Gi
@@ -96,6 +97,7 @@ spec:
     # Worker configuration
     worker:
       replicas: 1
+      priorityClassName: system-critical
       podAnnotations:
         linkerd.io/inject: "disabled"
       envFrom:
@@ -142,7 +144,7 @@ spec:
       resources:
         requests:
           cpu: 100m
-          memory: 256Mi
+          memory: 128Mi
         limits:
           cpu: 500m
-          memory: 512Mi
+          memory: 1Gi

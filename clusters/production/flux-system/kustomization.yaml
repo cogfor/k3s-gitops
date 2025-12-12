@@ -4,6 +4,7 @@ resources:
   - gotk-components.yaml
   - gotk-sync.yaml
   - sources-kustomization.yaml
+  - priorityclasses-kustomization.yaml
   - cert-manager-kustomization.yaml
   - cert-manager-issuers.yaml
   - traefik-kustomization.yaml

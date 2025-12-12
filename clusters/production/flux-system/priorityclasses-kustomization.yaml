@@ -1,0 +1,18 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: priorityclasses
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./clusters/production/priorityclasses
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  healthChecks:
+    - apiVersion: scheduling.k8s.io/v1
+      kind: PriorityClass
+      name: system-critical
+  timeout: 3m
