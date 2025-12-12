@@ -42,6 +42,11 @@ spec:
     # Server replicas
     server:
       replicas: 1
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 0
+          maxUnavailable: 1
       podAnnotations:
         linkerd.io/inject: "disabled"
       envFrom:
@@ -96,6 +101,11 @@ spec:
     # Worker configuration
     worker:
       replicas: 1
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 0
+          maxUnavailable: 1
       podAnnotations:
         linkerd.io/inject: "disabled"
       envFrom:
