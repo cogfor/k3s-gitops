@@ -99,3 +99,23 @@ spec:
           annotations:
             summary: "High error rate in {{ $labels.deployment }}"
             description: "Error rate: {{ $value | humanizePercentage }}"
+
+    - name: backup
+      interval: 30s
+      rules:
+        - alert: BackupJobFailed
+          expr: kube_job_status_failed{namespace="backup"} > 0
+          for: 1h
+          labels:
+            severity: critical
+          annotations:
+            summary: "Backup job failed"
+            description: "Backup job {{ $labels.job_name }} failed"
+        - alert: BackupJobNotRun
+          expr: time() - kube_job_status_completion_time{namespace="backup"} > 86400 * 2
+          for: 1h
+          labels:
+            severity: warning
+          annotations:
+            summary: "Backup not run recently"
+            description: "Backup job {{ $labels.job_name }} hasn't run in 2 days"

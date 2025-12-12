@@ -1,0 +1,103 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: authentik-postgres-backup
+  namespace: backup
+spec:
+  schedule: "0 2 * * *"  # Daily at 2 AM
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: backup
+            image: postgres:18-alpine
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              DATE=$(date +%Y%m%d-%H%M%S)
+              BACKUP_FILE="authentik-db-${DATE}.sql.gz"
+
+              # Dump database
+              PGPASSWORD="${POSTGRES_PASSWORD}" pg_dump \
+                -h postgres.authentik.svc.cluster.local \
+                -U ${POSTGRES_USER} \
+                -d ${POSTGRES_DB} \
+                | gzip > /tmp/${BACKUP_FILE}
+
+              # Upload to S3
+              apk add --no-cache aws-cli
+              aws s3 cp /tmp/${BACKUP_FILE} \
+                s3://${S3_BUCKET}/authentik-db/${BACKUP_FILE} \
+                --endpoint-url ${S3_ENDPOINT}
+
+              echo "Backup ${BACKUP_FILE} uploaded successfully"
+
+              # Cleanup old backups (keep 30 days)
+              CUTOFF_DATE=$(date -d "30 days ago" +%Y%m%d 2>/dev/null || date -v-30d +%Y%m%d)
+              aws s3 ls s3://${S3_BUCKET}/authentik-db/ --endpoint-url ${S3_ENDPOINT} | \
+                awk '{print $4}' | \
+                while read -r file; do
+                  if [ -n "$file" ]; then
+                    FILE_DATE=$(echo $file | sed 's/authentik-db-\([0-9]\{8\}\).*/\1/')
+                    if [ "$FILE_DATE" -lt "$CUTOFF_DATE" ]; then
+                      echo "Removing old backup: $file"
+                      aws s3 rm s3://${S3_BUCKET}/authentik-db/${file} --endpoint-url ${S3_ENDPOINT}
+                    fi
+                  fi
+                done
+
+              echo "Cleanup complete"
+
+            env:
+            - name: POSTGRES_HOST
+              value: "postgres.authentik.svc.cluster.local"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-db-credentials
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-db-credentials
+                  key: POSTGRES_PASSWORD
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: authentik-db-credentials
+                  key: POSTGRES_DB
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: s3-credentials
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: s3-credentials
+                  key: AWS_SECRET_ACCESS_KEY
+            - name: S3_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: s3-credentials
+                  key: S3_ENDPOINT
+            - name: S3_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: s3-credentials
+                  key: S3_BUCKET
+
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                cpu: 200m
+                memory: 256Mi

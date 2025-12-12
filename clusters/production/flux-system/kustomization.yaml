@@ -15,6 +15,7 @@ resources:
   - network-policies-kustomization.yaml
   - linkerd-kustomization.yaml
   - monitoring-kustomization.yaml
+  - backup-kustomization.yaml
 patches:
   - patch: |-
       apiVersion: apps/v1
