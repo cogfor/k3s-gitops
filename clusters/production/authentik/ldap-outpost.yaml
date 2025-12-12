@@ -10,11 +10,6 @@ metadata:
     app: authentik-ldap-outpost
 spec:
   replicas: 1
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 0
-      maxUnavailable: 1
   selector:
     matchLabels:
       app: authentik-ldap-outpost

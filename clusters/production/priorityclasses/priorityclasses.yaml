@@ -1,0 +1,39 @@
+---
+# Critical services that should preempt other workloads
+# Examples: authentik (identity), traefik (ingress), cert-manager
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: system-critical
+value: 1000000
+globalDefault: false
+description: "Critical infrastructure services that can preempt lower priority workloads"
+---
+# Important but not critical services
+# Examples: linkwarden (data store), databases
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: high-priority
+value: 100000
+globalDefault: false
+description: "Important services but can be temporarily interrupted"
+---
+# Monitoring and observability
+# Examples: grafana, loki, victoria-metrics
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: monitoring
+value: 10000
+globalDefault: false
+description: "Monitoring and observability services (lowest priority, can be evicted)"
+---
+# Default priority for unclassified workloads
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: default-priority
+value: 0
+globalDefault: true
+description: "Default priority for workloads without explicit priority"
