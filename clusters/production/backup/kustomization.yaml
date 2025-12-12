@@ -6,3 +6,4 @@ resources:
   - s3-secret.yaml
   - authentik-db-credentials.yaml
   - authentik-postgres-backup.yaml
+  - allow-backup-to-postgres.yaml
