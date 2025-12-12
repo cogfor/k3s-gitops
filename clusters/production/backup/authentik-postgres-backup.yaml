@@ -40,13 +40,16 @@ spec:
               echo "Backup ${BACKUP_FILE} uploaded successfully"
 
               # Cleanup old backups (keep 30 days)
-              CUTOFF_DATE=$(date -d "30 days ago" +%Y%m%d 2>/dev/null || date -v-30d +%Y%m%d)
+              # Calculate cutoff date (30 days ago) using POSIX-compliant method
+              CUTOFF_EPOCH=$(($(date +%s) - 30 * 86400))
+              CUTOFF_DATE=$(date -d @${CUTOFF_EPOCH} +%Y%m%d 2>/dev/null || date -r ${CUTOFF_EPOCH} +%Y%m%d)
+
               aws s3 ls s3://${S3_BUCKET}/authentik-db/ --endpoint-url ${S3_ENDPOINT} | \
                 awk '{print $4}' | \
                 while read -r file; do
                   if [ -n "$file" ]; then
                     FILE_DATE=$(echo $file | sed 's/authentik-db-\([0-9]\{8\}\).*/\1/')
-                    if [ "$FILE_DATE" -lt "$CUTOFF_DATE" ]; then
+                    if [ -n "$FILE_DATE" ] && [ "$FILE_DATE" != "$file" ] && [ "$FILE_DATE" -lt "$CUTOFF_DATE" ]; then
                       echo "Removing old backup: $file"
                       aws s3 rm s3://${S3_BUCKET}/authentik-db/${file} --endpoint-url ${S3_ENDPOINT}
                     fi
