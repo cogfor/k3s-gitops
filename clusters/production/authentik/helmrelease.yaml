@@ -42,7 +42,7 @@ spec:
     # Server replicas
     server:
       replicas: 1
-      priorityClassName: system-critical
+      priorityClassName: cluster-critical
       podAnnotations:
         linkerd.io/inject: "disabled"
       envFrom:
@@ -97,7 +97,7 @@ spec:
     # Worker configuration
     worker:
       replicas: 1
-      priorityClassName: system-critical
+      priorityClassName: cluster-critical
       podAnnotations:
         linkerd.io/inject: "disabled"
       envFrom:

@@ -14,5 +14,5 @@ spec:
   healthChecks:
     - apiVersion: scheduling.k8s.io/v1
       kind: PriorityClass
-      name: system-critical
+      name: cluster-critical
   timeout: 3m

@@ -70,3 +70,9 @@ flux get all
 flux get kustomizations
 flux get helmreleases -A
 ```
+
+## Documentation
+
+- **[CLAUDE.md](CLAUDE.md)** - Comprehensive development guide including commands, architecture patterns, and workflows for working with this repository
+- **[AGENTS.md](AGENTS.md)** - AI agent guidelines for repository structure and development practices
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Detailed system architecture, security design, and operational patterns

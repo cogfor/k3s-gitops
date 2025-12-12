@@ -21,7 +21,7 @@ spec:
         linkerd.io/inject: disabled  # Keep outpost unmanaged by Linkerd
         config.linkerd.io/opaque-ports: "3389,6636,9300"  # If injected anyway, treat LDAP/LDAPS as opaque
     spec:
-      priorityClassName: system-critical
+      priorityClassName: cluster-critical
       containers:
         - name: ldap
           image: ghcr.io/goauthentik/ldap:2025.10.2
