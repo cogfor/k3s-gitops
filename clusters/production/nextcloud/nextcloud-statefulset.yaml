@@ -1,0 +1,199 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nextcloud
+  namespace: nextcloud
+spec:
+  serviceName: nextcloud
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nextcloud
+  template:
+    metadata:
+      labels:
+        app: nextcloud
+        owner: platform
+      annotations:
+        linkerd.io/inject: "enabled"
+    spec:
+      priorityClassName: high-priority
+      initContainers:
+      # Wait for PostgreSQL to be ready
+      - name: wait-for-postgres
+        image: docker.io/postgres:18-alpine
+        command:
+        - sh
+        - -c
+        - |
+          until pg_isready -h postgres -U nextcloud; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+          echo "PostgreSQL is ready"
+        env:
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-secrets
+              key: postgres-password
+      # Wait for Redis to be ready
+      - name: wait-for-redis
+        image: docker.io/redis:8.2-alpine
+        command:
+        - sh
+        - -c
+        - |
+          until redis-cli -h redis -a $REDIS_PASSWORD ping | grep PONG; do
+            echo "Waiting for Redis..."
+            sleep 2
+          done
+          echo "Redis is ready"
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-secrets
+              key: redis-password
+      containers:
+      - name: nextcloud
+        image: docker.io/nextcloud:30-fpm-alpine
+        env:
+        # PostgreSQL database configuration
+        - name: POSTGRES_HOST
+          value: "postgres"
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-secrets
+              key: postgres-db
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-secrets
+              key: postgres-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-secrets
+              key: postgres-password
+
+        # Redis configuration
+        - name: REDIS_HOST
+          value: "redis"
+        - name: REDIS_HOST_PORT
+          value: "6379"
+        - name: REDIS_HOST_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-secrets
+              key: redis-password
+
+        # NextCloud admin account
+        - name: NEXTCLOUD_ADMIN_USER
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-secrets
+              key: nextcloud-admin-user
+        - name: NEXTCLOUD_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-secrets
+              key: nextcloud-admin-password
+
+        # NextCloud configuration
+        - name: NEXTCLOUD_TRUSTED_DOMAINS
+          value: "cloud.primed.io"
+        - name: OVERWRITEPROTOCOL
+          value: "https"
+        - name: OVERWRITEHOST
+          value: "cloud.primed.io"
+        - name: OVERWRITECLIURL
+          value: "https://cloud.primed.io"
+        - name: APACHE_DISABLE_REWRITE_IP
+          value: "1"
+
+        # PHP-FPM performance tuning
+        - name: PHP_MEMORY_LIMIT
+          value: "1G"
+        - name: PHP_UPLOAD_LIMIT
+          value: "2G"
+        - name: PHP_MAX_EXECUTION_TIME
+          value: "300"
+
+        ports:
+        - containerPort: 80
+          name: http
+
+        volumeMounts:
+        # Application files (config, apps, themes) - local storage for performance
+        - name: nextcloud-app
+          mountPath: /var/www/html
+        # User data - CIFS storage for scalability
+        - name: nextcloud-data
+          mountPath: /var/www/html/data
+
+        livenessProbe:
+          httpGet:
+            path: /status.php
+            port: 80
+            httpHeaders:
+            - name: Host
+              value: cloud.primed.io
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+
+        readinessProbe:
+          httpGet:
+            path: /status.php
+            port: 80
+            httpHeaders:
+            - name: Host
+              value: cloud.primed.io
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: 2000m
+            memory: 2Gi
+
+      volumes:
+      # User data on CIFS (Hetzner Storage Box)
+      - name: nextcloud-data
+        persistentVolumeClaim:
+          claimName: nextcloud-data
+
+  volumeClaimTemplates:
+  # Application files on local-path for performance
+  - metadata:
+      name: nextcloud-app
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: local-path
+      resources:
+        requests:
+          storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nextcloud
+  namespace: nextcloud
+  labels:
+    app: nextcloud
+spec:
+  selector:
+    app: nextcloud
+  ports:
+  - port: 80
+    targetPort: 80
+    name: http

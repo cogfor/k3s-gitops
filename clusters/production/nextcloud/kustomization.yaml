@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - secrets.enc.yaml
+  - postgres.yaml
+  - redis.yaml
+  - cifs-secret.enc.yaml
+  - cifs-pv.yaml
+  - cifs-pvc.yaml
+  - nextcloud-statefulset.yaml
+  - certificate.yaml
+  - middleware-tailscale.yaml
+  - ingressroute.yaml

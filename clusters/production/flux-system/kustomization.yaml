@@ -4,6 +4,7 @@ resources:
   - gotk-components.yaml
   - gotk-sync.yaml
   - sources-kustomization.yaml
+  - csi-smb-driver-kustomization.yaml
   - priorityclasses-kustomization.yaml
   - cert-manager-kustomization.yaml
   - cert-manager-issuers.yaml
@@ -11,6 +12,7 @@ resources:
   - tailscale-kustomization.yaml
   - authentik-kustomization.yaml
   - linkwarden-kustomization.yaml
+  - nextcloud-kustomization.yaml
   - kyverno-kustomization.yaml
   - kyverno-policies-kustomization.yaml
   - network-policies-kustomization.yaml

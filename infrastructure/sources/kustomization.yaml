@@ -9,3 +9,4 @@ resources:
   - prometheus.yaml
   - grafana.yaml
   - victoria-metrics.yaml
+  - csi-driver-smb.yaml
