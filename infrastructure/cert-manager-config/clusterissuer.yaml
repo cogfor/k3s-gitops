@@ -15,6 +15,11 @@ spec:
             apiTokenSecretRef:
               name: cloudflare-api-token
               key: api-token
+          # Keep cert-manager compatible with a default-deny egress posture:
+          # propagation checks query via in-cluster DNS instead of external authoritative nameservers.
+          recursiveNameservers:
+            - 10.43.0.10:53
+          recursiveNameserversOnly: true
         selector:
           dnsZones:
             - primed.io
@@ -35,6 +40,9 @@ spec:
             apiTokenSecretRef:
               name: cloudflare-api-token
               key: api-token
+          recursiveNameservers:
+            - 10.43.0.10:53
+          recursiveNameserversOnly: true
         selector:
           dnsZones:
             - primed.io
