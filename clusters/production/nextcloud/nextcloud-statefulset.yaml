@@ -4,6 +4,9 @@ kind: StatefulSet
 metadata:
   name: nextcloud
   namespace: nextcloud
+  labels:
+    app: nextcloud
+    owner: platform
 spec:
   serviceName: nextcloud
   replicas: 1
