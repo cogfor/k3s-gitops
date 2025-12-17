@@ -44,6 +44,15 @@ spec:
           set -eu
           php -r '
             $configFile = "/var/www/html/config/config.php";
+            if (is_file($configFile)) {
+              $raw = file_get_contents($configFile);
+              if ($raw !== false && str_contains($raw, "<?php\\n\\Array = array (")) {
+                $raw = str_replace("<?php\\n\\Array = array (", "<?php\n\$CONFIG = array (", $raw);
+                $raw = str_replace("\\n", "\n", $raw);
+                file_put_contents($configFile, $raw);
+              }
+            }
+
             include $configFile;
 
             $redisPassword = getenv("REDIS_HOST_PASSWORD");
@@ -66,7 +75,7 @@ spec:
               }
             }
 
-            $out = "<?php\\n\\$CONFIG = " . var_export($CONFIG, true) . ";\\n";
+            $out = "<?php\n\$CONFIG = " . var_export($CONFIG, true) . ";\n";
             file_put_contents($configFile, $out);
           '
           chown 33:33 /var/www/html/config/config.php
