@@ -4,6 +4,10 @@ kind: StatefulSet
 metadata:
   name: redis
   namespace: nextcloud
+  labels:
+    app: redis
+    owner: platform
+    component: cache
 spec:
   serviceName: redis
   replicas: 1
