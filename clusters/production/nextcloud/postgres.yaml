@@ -26,9 +26,9 @@ spec:
     spec:
       priorityClassName: cluster-critical
       securityContext:
-        fsGroup: 999
         runAsUser: 999
-        runAsNonRoot: true
+        runAsGroup: 999
+        fsGroup: 999
       containers:
       - name: postgres
         image: docker.io/postgres:18-alpine
