@@ -20,6 +20,4 @@ spec:
   dependsOn:
     - name: cert-manager
     - name: traefik
-    - name: linkerd
-    - name: network-policies
     - name: csi-smb-driver
