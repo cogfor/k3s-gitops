@@ -11,8 +11,9 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: cifs
   mountOptions:
-    - dir_mode=0777
-    - file_mode=0777
+    # Nextcloud refuses to run if the data directory is world-readable.
+    - dir_mode=0770
+    - file_mode=0660
     - uid=33        # www-data (NextCloud container user)
     - gid=33
     - nobrl         # Disable byte-range locks (performance)
