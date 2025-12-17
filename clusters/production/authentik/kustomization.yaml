@@ -10,6 +10,8 @@ resources:
   - certificate.yaml
   - middleware-tailscale-only.yaml
   - ingressroute.yaml
+  - tailscale-certificate.yaml
+  - ingressroute-tailscale.yaml
   - ldap-issuer.yaml
   - ldap-certificate.yaml
   - ldap-outpost.yaml

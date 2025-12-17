@@ -1,0 +1,20 @@
+---
+# Self-signed certificate for Tailscale hostnames
+# Allows HTTPS access to Authentik admin via Tailscale without certificate warnings
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: authentik-tailscale-tls
+  namespace: authentik
+spec:
+  secretName: authentik-tailscale-tls
+  issuerRef:
+    name: ldap-selfsigned  # Reuse existing self-signed issuer
+    kind: Issuer
+  commonName: k3s-primed
+  dnsNames:
+    - k3s-primed
+    - k3s-primed.tail6cd0b8.ts.net
+    - k3s.primed.io
+  duration: 2160h    # 90 days
+  renewBefore: 360h  # Renew 15 days before expiry

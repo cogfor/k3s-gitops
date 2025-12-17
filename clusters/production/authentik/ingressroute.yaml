@@ -8,14 +8,6 @@ spec:
   entryPoints:
     - websecure
   routes:
-    # Admin interface via Tailscale hostnames - no IP restriction needed (already on Tailscale network)
-    # Priority: 100 (highest - most specific)
-    - match: (Host(`k3s-primed`) || Host(`k3s-primed.tail6cd0b8.ts.net`)) && PathPrefix(`/if/admin`)
-      kind: Rule
-      priority: 100
-      services:
-        - name: authentik-server
-          port: 80
     # Admin interface via public hostname - restricted to Tailscale IPs
     # Priority: 100 (highest - most specific)
     - match: Host(`auth.primed.io`) && PathPrefix(`/if/admin`)
@@ -28,7 +20,7 @@ spec:
           port: 80
     # All other paths (including OAuth endpoints) - public
     # Priority: 1 (lowest - catch-all)
-    - match: Host(`auth.primed.io`) || Host(`k3s-primed`) || Host(`k3s-primed.tail6cd0b8.ts.net`)
+    - match: Host(`auth.primed.io`)
       kind: Rule
       priority: 1
       services:

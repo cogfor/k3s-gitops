@@ -1,0 +1,21 @@
+---
+# IngressRoute for Tailscale hostnames with self-signed certificate
+# Provides HTTPS access to Authentik via Tailscale network
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: authentik-tailscale
+  namespace: authentik
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    # All paths accessible via Tailscale hostnames
+    # No IP restriction needed - already on Tailscale network
+    - match: Host(`k3s-primed`) || Host(`k3s-primed.tail6cd0b8.ts.net`)
+      kind: Rule
+      services:
+        - name: authentik-server
+          port: 80
+  tls:
+    secretName: authentik-tailscale-tls
