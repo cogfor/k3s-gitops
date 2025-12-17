@@ -26,9 +26,11 @@ spec:
     spec:
       priorityClassName: cluster-critical
       securityContext:
+        runAsNonRoot: true
         runAsUser: 999
         runAsGroup: 999
         fsGroup: 999
+        fsGroupChangePolicy: OnRootMismatch
       containers:
       - name: postgres
         image: docker.io/postgres:18-alpine
@@ -50,7 +52,6 @@ spec:
               key: postgres-password
         - name: PGDATA
           value: /var/lib/postgresql/data/pgdata
-        command: ["postgres"]
         args:
           - "-c"
           - "shared_buffers=512MB"
@@ -84,7 +85,6 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /var/lib/postgresql/data
-          subPath: postgres
         livenessProbe:
           exec:
             command:
