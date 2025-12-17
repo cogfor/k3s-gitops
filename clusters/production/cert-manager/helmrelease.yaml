@@ -21,6 +21,11 @@ spec:
     crds: CreateReplace
   values:
     installCRDs: true
+    extraArgs:
+      # Default-deny egress in the cert-manager namespace only allows DNS to kube-dns.
+      # Force DNS-01 propagation checks to use in-cluster DNS instead of querying external authoritative nameservers directly.
+      - --dns01-recursive-nameservers=10.43.0.10:53
+      - --dns01-recursive-nameservers-only=true
     global:
       leaderElection:
         namespace: cert-manager
