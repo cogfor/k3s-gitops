@@ -4,4 +4,3 @@ resources:
   - namespace.yaml
   - cloudflare-secret.enc.yaml
   - helmrelease.yaml
-  - middleware-tailscale-only.yaml

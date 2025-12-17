@@ -8,6 +8,7 @@ resources:
   - media-pvc.yaml
   - helmrelease.yaml
   - certificate.yaml
+  - middleware-tailscale-only.yaml
   - ingressroute.yaml
   - ldap-issuer.yaml
   - ldap-certificate.yaml
