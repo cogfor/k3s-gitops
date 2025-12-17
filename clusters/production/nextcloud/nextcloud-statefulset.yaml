@@ -35,6 +35,63 @@ spec:
         volumeMounts:
         - name: nextcloud-app
           mountPath: /var/www/html
+      - name: configure-nextcloud
+        image: docker.io/nextcloud:30-apache
+        command:
+        - sh
+        - -c
+        - |
+          set -eu
+          php -r '
+            $configFile = "/var/www/html/config/config.php";
+            include $configFile;
+
+            $redisPassword = getenv("REDIS_HOST_PASSWORD");
+            if ($redisPassword !== false && $redisPassword !== "") {
+              if (!isset($CONFIG["redis"])) { $CONFIG["redis"] = []; }
+              $CONFIG["redis"]["host"] = getenv("REDIS_HOST") ?: ($CONFIG["redis"]["host"] ?? "redis");
+              $CONFIG["redis"]["port"] = (int) (getenv("REDIS_HOST_PORT") ?: ($CONFIG["redis"]["port"] ?? 6379));
+              $CONFIG["redis"]["password"] = $redisPassword;
+            }
+
+            $trustedDomains = getenv("NEXTCLOUD_TRUSTED_DOMAINS");
+            if ($trustedDomains !== false && trim($trustedDomains) !== "") {
+              $CONFIG["trusted_domains"] = preg_split("/\\s+/", trim($trustedDomains));
+            }
+
+            foreach (["OVERWRITEHOST" => "overwritehost", "OVERWRITEPROTOCOL" => "overwriteprotocol", "OVERWRITECLIURL" => "overwrite.cli.url"] as $env => $key) {
+              $value = getenv($env);
+              if ($value !== false && $value !== "") {
+                $CONFIG[$key] = $value;
+              }
+            }
+
+            $out = "<?php\\n\\$CONFIG = " . var_export($CONFIG, true) . ";\\n";
+            file_put_contents($configFile, $out);
+          '
+          chown 33:33 /var/www/html/config/config.php
+          chmod 640 /var/www/html/config/config.php
+        env:
+        - name: REDIS_HOST
+          value: "redis"
+        - name: REDIS_HOST_PORT
+          value: "6379"
+        - name: REDIS_HOST_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: nextcloud-secrets
+              key: redis-password
+        - name: NEXTCLOUD_TRUSTED_DOMAINS
+          value: "cloud.primed.io"
+        - name: OVERWRITEPROTOCOL
+          value: "https"
+        - name: OVERWRITEHOST
+          value: "cloud.primed.io"
+        - name: OVERWRITECLIURL
+          value: "https://cloud.primed.io"
+        volumeMounts:
+        - name: nextcloud-app
+          mountPath: /var/www/html
       # Wait for PostgreSQL to be ready
       - name: wait-for-postgres
         image: docker.io/postgres:18-alpine
