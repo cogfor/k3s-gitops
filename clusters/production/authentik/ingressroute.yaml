@@ -8,6 +8,16 @@ spec:
   entryPoints:
     - websecure
   routes:
+    # Admin interface - restricted to Tailscale
+    - match: Host(`auth.primed.io`) && PathPrefix(`/if/admin`)
+      kind: Rule
+      middlewares:
+        - name: tailscale-ipallowlist
+          namespace: traefik
+      services:
+        - name: authentik-server
+          port: 80
+    # All other paths (including OAuth endpoints) - public
     - match: Host(`auth.primed.io`)
       kind: Rule
       services:
