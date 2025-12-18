@@ -18,7 +18,6 @@ spec:
     - name: traefik
     - name: csi-smb-driver
     - name: authentik
-    - name: network-policies
     - name: tailscale
   decryption:
     provider: sops
