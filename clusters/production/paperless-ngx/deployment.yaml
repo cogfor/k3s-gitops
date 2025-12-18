@@ -93,13 +93,17 @@ spec:
               name: paperless-ngx-secrets
               key: paperless-admin-password
         - name: PAPERLESS_URL
-          value: https://archive.primed.io
+          value: https://paperless.tail6cd0b8.ts.net
         - name: PAPERLESS_ALLOWED_HOSTS
           value: archive.primed.io,paperless.tail6cd0b8.ts.net
         - name: PAPERLESS_CORS_ALLOWED_HOSTS
           value: https://archive.primed.io,https://paperless.tail6cd0b8.ts.net
         - name: PAPERLESS_CSRF_TRUSTED_ORIGINS
           value: https://archive.primed.io,https://paperless.tail6cd0b8.ts.net
+        - name: PAPERLESS_USE_X_FORWARD_HOST
+          value: "true"
+        - name: PAPERLESS_USE_X_FORWARD_PORT
+          value: "true"
         - name: PAPERLESS_TIME_ZONE
           value: UTC
         - name: PAPERLESS_OCR_LANGUAGE
