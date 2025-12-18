@@ -12,6 +12,7 @@ resources:
   - redis.yaml
   - deployment.yaml
   - ingressroute.yaml
+  - ingress-tailscale.yaml
   - middleware-tailscale.yaml
   - certificate.yaml
   - network-policies.yaml

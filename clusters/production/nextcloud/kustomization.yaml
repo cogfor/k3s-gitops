@@ -10,5 +10,6 @@ resources:
   - cifs-pvc.yaml
   - nextcloud-statefulset.yaml
   - certificate.yaml
+  - ingress-tailscale.yaml
   - middleware-tailscale.yaml
   - ingressroute.yaml

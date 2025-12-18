@@ -180,10 +180,6 @@ metadata:
   namespace: paperless-ngx
   labels:
     app: paperless-ngx
-  annotations:
-    tailscale.com/expose: "true"
-    tailscale.com/hostname: "paperless"
-    tailscale.com/proxy-group: "tailscale-ingress"
 spec:
   selector:
     app: paperless-ngx

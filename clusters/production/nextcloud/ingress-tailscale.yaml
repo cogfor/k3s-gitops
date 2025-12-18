@@ -1,0 +1,24 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nextcloud-tailscale
+  namespace: nextcloud
+  annotations:
+    tailscale.com/proxy-group: "tailscale-ingress"
+    tailscale.com/hostname: "nextcloud"
+spec:
+  ingressClassName: tailscale
+  tls:
+    - hosts:
+        - nextcloud
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nextcloud
+                port:
+                  number: 80
