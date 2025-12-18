@@ -91,13 +91,13 @@ spec:
               name: nextcloud-secrets
               key: redis-password
         - name: NEXTCLOUD_TRUSTED_DOMAINS
-          value: "cloud.primed.io"
+          value: "cloud.primed.io nextcloud.tail6cd0b8.ts.net"
         - name: OVERWRITEPROTOCOL
           value: "https"
         - name: OVERWRITEHOST
-          value: "cloud.primed.io"
+          value: "nextcloud.tail6cd0b8.ts.net"
         - name: OVERWRITECLIURL
-          value: "https://cloud.primed.io"
+          value: "https://nextcloud.tail6cd0b8.ts.net"
         volumeMounts:
         - name: nextcloud-app
           mountPath: /var/www/html
