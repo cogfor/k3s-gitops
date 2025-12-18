@@ -97,7 +97,7 @@ spec:
         - name: PAPERLESS_ALLOWED_HOSTS
           value: archive.primed.io,paperless.tail6cd0b8.ts.net
         - name: PAPERLESS_CORS_ALLOWED_HOSTS
-          value: archive.primed.io,paperless.tail6cd0b8.ts.net
+          value: https://archive.primed.io,https://paperless.tail6cd0b8.ts.net
         - name: PAPERLESS_CSRF_TRUSTED_ORIGINS
           value: https://archive.primed.io,https://paperless.tail6cd0b8.ts.net
         - name: PAPERLESS_TIME_ZONE
