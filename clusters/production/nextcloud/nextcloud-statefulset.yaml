@@ -93,11 +93,11 @@ spec:
         - name: NEXTCLOUD_TRUSTED_DOMAINS
           value: "cloud.primed.io nextcloud.tail6cd0b8.ts.net"
         - name: OVERWRITEPROTOCOL
-          value: "https"
+          value: "http"
         - name: OVERWRITEHOST
           value: "nextcloud.tail6cd0b8.ts.net"
         - name: OVERWRITECLIURL
-          value: "https://nextcloud.tail6cd0b8.ts.net"
+          value: "http://nextcloud.tail6cd0b8.ts.net"
         volumeMounts:
         - name: nextcloud-app
           mountPath: /var/www/html
