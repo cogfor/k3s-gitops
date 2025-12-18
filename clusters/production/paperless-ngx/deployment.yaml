@@ -110,6 +110,10 @@ spec:
           value: eng
         - name: PAPERLESS_ACCOUNT_ALLOW_SIGNUPS
           value: "false"
+        - name: PAPERLESS_APPS
+          value: "allauth.socialaccount.providers.openid_connect"
+        - name: PAPERLESS_SOCIALACCOUNT_ALLOW_SIGNUPS
+          value: "true"
         - name: PAPERLESS_SOCIALACCOUNT_PROVIDERS
           valueFrom:
             secretKeyRef:
