@@ -1,0 +1,16 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: paperless-ngx
+resources:
+  - namespace.yaml
+  - cifs-secret.enc.yaml
+  - cifs-pv.yaml
+  - cifs-pvc.yaml
+  - secrets.enc.yaml
+  - postgres.yaml
+  - redis.yaml
+  - deployment.yaml
+  - ingressroute.yaml
+  - middleware-tailscale.yaml
+  - certificate.yaml

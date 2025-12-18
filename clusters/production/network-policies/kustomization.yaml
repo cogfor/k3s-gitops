@@ -5,6 +5,7 @@ resources:
   - default-deny.yaml
   - authentik-policies.yaml
   - linkwarden-policies.yaml
+  - paperless-ngx-policies.yaml
   - nextcloud-policies.yaml
   - traefik-policies.yaml
   - system-policies.yaml

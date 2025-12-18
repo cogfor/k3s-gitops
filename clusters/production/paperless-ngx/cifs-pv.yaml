@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: paperless-hetzner-storagebox
+spec:
+  capacity:
+    storage: 1Ti
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: cifs
+  mountOptions:
+    - dir_mode=0770
+    - file_mode=0660
+    - uid=1000
+    - gid=1000
+    - nobrl
+    - cache=strict
+    - actimeo=30
+    - prefixpath=backup/paperless-ngx
+    - vers=3.1.1
+  csi:
+    driver: smb.csi.k8s.io
+    volumeHandle: paperless-hetzner-storagebox
+    volumeAttributes:
+      source: //u492791-sub6.your-storagebox.de/u492791-sub6
+    nodeStageSecretRef:
+      name: paperless-cifs-credentials
+      namespace: paperless-ngx

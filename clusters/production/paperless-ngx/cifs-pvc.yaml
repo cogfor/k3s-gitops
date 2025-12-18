@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: paperless-data
+  namespace: paperless-ngx
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: cifs
+  resources:
+    requests:
+      storage: 1Ti
+  volumeName: paperless-hetzner-storagebox

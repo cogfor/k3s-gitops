@@ -1,0 +1,12 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: tailscale-ipallowlist
+  namespace: paperless-ngx
+spec:
+  ipAllowList:
+    sourceRange:
+      - 100.64.0.0/10        # Tailscale IPv4 CGNAT range
+      - fd7a:115c:a1e0::/48  # Tailscale IPv6 range
+      - 127.0.0.1/32         # Localhost for health checks

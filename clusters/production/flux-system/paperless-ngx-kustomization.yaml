@@ -1,0 +1,26 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: paperless-ngx
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./clusters/production/paperless-ngx
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  timeout: 5m
+  wait: true
+  dependsOn:
+    - name: cert-manager
+    - name: traefik
+    - name: csi-smb-driver
+    - name: authentik
+    - name: network-policies
+    - name: tailscale
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age

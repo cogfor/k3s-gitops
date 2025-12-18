@@ -1,0 +1,262 @@
+---
+# Default deny all traffic in paperless-ngx namespace
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: paperless-ngx
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+---
+# Allow Traefik → Paperless
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-traefik-to-paperless
+  namespace: paperless-ngx
+spec:
+  podSelector:
+    matchLabels:
+      app: paperless-ngx
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: traefik
+      ports:
+        - protocol: TCP
+          port: 8000
+---
+# Allow Paperless → PostgreSQL
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-paperless-to-postgres
+  namespace: paperless-ngx
+spec:
+  podSelector:
+    matchLabels:
+      app: paperless-ngx
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: postgres
+              component: database
+      ports:
+        - protocol: TCP
+          port: 5432
+---
+# Allow Paperless → Redis
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-paperless-to-redis
+  namespace: paperless-ngx
+spec:
+  podSelector:
+    matchLabels:
+      app: paperless-ngx
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+              component: cache
+      ports:
+        - protocol: TCP
+          port: 6379
+---
+# Allow Paperless → Authentik (OIDC)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-paperless-to-authentik
+  namespace: paperless-ngx
+spec:
+  podSelector:
+    matchLabels:
+      app: paperless-ngx
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: authentik
+      ports:
+        - protocol: TCP
+          port: 80
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 9000
+---
+# Allow all pods → DNS
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-paperless-to-dns
+  namespace: paperless-ngx
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+# Allow all pods → Linkerd control plane
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-paperless-to-linkerd
+  namespace: paperless-ngx
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: linkerd
+      ports:
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 8086
+        - protocol: TCP
+          port: 8090
+---
+# Allow all pods → Kubernetes API (ClusterIP)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-paperless-to-k8s-api
+  namespace: paperless-ngx
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 10.43.0.1/32
+      ports:
+        - protocol: TCP
+          port: 443
+---
+# Allow all pods → Kubernetes API (Node IP - DNAT target)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-paperless-to-kubeapi-node
+  namespace: paperless-ngx
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 188.245.88.79/32  # k3s node IP
+      ports:
+        - protocol: TCP
+          port: 6443
+---
+# Allow Paperless → HTTPS egress (for updates/webhooks)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-paperless-https-egress
+  namespace: paperless-ngx
+spec:
+  podSelector:
+    matchLabels:
+      app: paperless-ngx
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 169.254.169.254/32  # Block cloud metadata
+              - 10.42.0.0/16        # Block pod network
+              - 10.43.0.0/16        # Block service network
+      ports:
+        - protocol: TCP
+          port: 443
+        - protocol: TCP
+          port: 80
+---
+# Allow PostgreSQL ingress from Paperless and backup namespace
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-postgres-ingress
+  namespace: paperless-ngx
+spec:
+  podSelector:
+    matchLabels:
+      app: postgres
+      component: database
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: paperless-ngx
+      ports:
+        - protocol: TCP
+          port: 5432
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: backup
+      ports:
+        - protocol: TCP
+          port: 5432
+---
+# Allow Redis ingress from Paperless
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-redis-ingress
+  namespace: paperless-ngx
+spec:
+  podSelector:
+    matchLabels:
+      app: redis
+      component: cache
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: paperless-ngx
+      ports:
+        - protocol: TCP
+          port: 6379

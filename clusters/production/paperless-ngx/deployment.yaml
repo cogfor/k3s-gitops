@@ -1,0 +1,193 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paperless-ngx
+  namespace: paperless-ngx
+  labels:
+    app: paperless-ngx
+    owner: platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paperless-ngx
+  template:
+    metadata:
+      labels:
+        app: paperless-ngx
+        owner: platform
+      annotations:
+        linkerd.io/inject: "enabled"
+    spec:
+      priorityClassName: high-priority
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+      initContainers:
+      - name: wait-for-postgres
+        image: docker.io/postgres:16-alpine
+        command: ['sh', '-c', 'until pg_isready -h postgres -U "$POSTGRES_USER"; do echo "waiting for postgres"; sleep 2; done;']
+        env:
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: paperless-ngx-secrets
+              key: postgres-user
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: paperless-ngx-secrets
+              key: postgres-password
+      - name: wait-for-redis
+        image: docker.io/redis:7.4-alpine
+        command: ['sh', '-c', 'until redis-cli -h redis -a "$REDIS_PASSWORD" ping | grep PONG; do echo "waiting for redis"; sleep 2; done;']
+        env:
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: paperless-ngx-secrets
+              key: redis-password
+      containers:
+      - name: paperless
+        image: ghcr.io/paperless-ngx/paperless-ngx:2.20.0
+        env:
+        - name: PAPERLESS_REDIS
+          valueFrom:
+            secretKeyRef:
+              name: paperless-ngx-secrets
+              key: redis-url
+        - name: PAPERLESS_DBHOST
+          value: postgres
+        - name: PAPERLESS_DBNAME
+          valueFrom:
+            secretKeyRef:
+              name: paperless-ngx-secrets
+              key: postgres-db
+        - name: PAPERLESS_DBUSER
+          valueFrom:
+            secretKeyRef:
+              name: paperless-ngx-secrets
+              key: postgres-user
+        - name: PAPERLESS_DBPASS
+          valueFrom:
+            secretKeyRef:
+              name: paperless-ngx-secrets
+              key: postgres-password
+        - name: PAPERLESS_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: paperless-ngx-secrets
+              key: paperless-secret-key
+        - name: PAPERLESS_ADMIN_USER
+          valueFrom:
+            secretKeyRef:
+              name: paperless-ngx-secrets
+              key: paperless-admin-user
+        - name: PAPERLESS_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: paperless-ngx-secrets
+              key: paperless-admin-password
+        - name: PAPERLESS_URL
+          value: https://archive.primed.io
+        - name: PAPERLESS_ALLOWED_HOSTS
+          value: archive.primed.io,paperless.tail6cd0b8.ts.net
+        - name: PAPERLESS_CORS_ALLOWED_HOSTS
+          value: archive.primed.io,paperless.tail6cd0b8.ts.net
+        - name: PAPERLESS_CSRF_TRUSTED_ORIGINS
+          value: https://archive.primed.io,https://paperless.tail6cd0b8.ts.net
+        - name: PAPERLESS_TIME_ZONE
+          value: UTC
+        - name: PAPERLESS_OCR_LANGUAGE
+          value: eng
+        - name: PAPERLESS_ACCOUNT_ALLOW_SIGNUPS
+          value: "false"
+        - name: PAPERLESS_SOCIALACCOUNT_PROVIDERS
+          valueFrom:
+            secretKeyRef:
+              name: paperless-ngx-secrets
+              key: socialaccount-providers
+        - name: USERMAP_UID
+          value: "1000"
+        - name: USERMAP_GID
+          value: "1000"
+        - name: PAPERLESS_DATA_DIR
+          value: /usr/src/paperless/data
+        - name: PAPERLESS_MEDIA_ROOT
+          value: /usr/src/paperless/media
+        - name: PAPERLESS_CONSUMPTION_DIR
+          value: /usr/src/paperless/consume
+        - name: PAPERLESS_EXPORT_DIR
+          value: /usr/src/paperless/export
+        ports:
+        - containerPort: 8000
+          name: http
+        volumeMounts:
+        - name: paperless-data
+          mountPath: /usr/src/paperless/data
+          subPath: data
+        - name: paperless-data
+          mountPath: /usr/src/paperless/media
+          subPath: media
+        - name: paperless-data
+          mountPath: /usr/src/paperless/consume
+          subPath: consume
+        - name: paperless-data
+          mountPath: /usr/src/paperless/export
+          subPath: export
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8000
+            httpHeaders:
+            - name: Host
+              value: archive.primed.io
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8000
+            httpHeaders:
+            - name: Host
+              value: archive.primed.io
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        resources:
+          requests:
+            cpu: 250m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+      volumes:
+      - name: paperless-data
+        persistentVolumeClaim:
+          claimName: paperless-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: paperless-ngx
+  namespace: paperless-ngx
+  labels:
+    app: paperless-ngx
+  annotations:
+    tailscale.com/expose: "true"
+    tailscale.com/hostname: "paperless"
+    tailscale.com/proxy-group: "tailscale-ingress"
+spec:
+  selector:
+    app: paperless-ngx
+  ports:
+  - port: 8000
+    targetPort: 8000
+    name: http
