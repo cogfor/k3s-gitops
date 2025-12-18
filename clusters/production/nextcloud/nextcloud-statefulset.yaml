@@ -6,6 +6,9 @@ metadata:
   namespace: nextcloud
   labels:
     app: nextcloud
+  annotations:
+    tailscale.com/expose: "true"
+    tailscale.com/hostname: "nextcloud"
     owner: platform
 spec:
   serviceName: nextcloud
