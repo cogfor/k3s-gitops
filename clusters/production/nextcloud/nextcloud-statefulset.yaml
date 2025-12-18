@@ -274,6 +274,7 @@ metadata:
   annotations:
     tailscale.com/expose: "true"
     tailscale.com/hostname: "nextcloud"
+    tailscale.com/proxy-group: "tailscale-ingress"
 spec:
   selector:
     app: nextcloud

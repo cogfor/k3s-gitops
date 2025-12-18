@@ -1,0 +1,10 @@
+---
+apiVersion: tailscale.com/v1alpha1
+kind: ProxyGroup
+metadata:
+  name: tailscale-ingress
+  namespace: tailscale
+spec:
+  type: ingress
+  hostnamePrefix: tailscale-ingress
+  replicas: 1

@@ -6,3 +6,4 @@ resources:
   - namespace.yaml
   - operator.yaml
   - oauth-secret.yaml
+  - proxygroup-ingress.yaml
