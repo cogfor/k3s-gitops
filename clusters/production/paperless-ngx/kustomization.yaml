@@ -14,3 +14,4 @@ resources:
   - ingressroute.yaml
   - middleware-tailscale.yaml
   - certificate.yaml
+  - network-policies.yaml
