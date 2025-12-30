@@ -53,7 +53,7 @@ spec:
               key: redis-password
       containers:
       - name: paperless
-        image: ghcr.io/paperless-ngx/paperless-ngx:2.20.0
+        image: ghcr.io/paperless-ngx/paperless-ngx:2.20.3
         env:
         - name: PAPERLESS_REDIS
           valueFrom:
