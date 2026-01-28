@@ -151,3 +151,25 @@ spec:
   egress:
     - to:
         - podSelector: {}  # To any pod in linkerd namespace
+---
+# Allow ALL meshed pods → proxy-to-proxy communication on port 4143
+# Required for Linkerd 2.18+ (replaces previous multi-port setup)
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-linkerd-proxy-to-proxy
+  namespace: linkerd
+spec:
+  podSelector: {}  # All pods in linkerd namespace
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector: {}  # From any namespace
+          podSelector:
+            matchExpressions:
+              - key: linkerd.io/control-plane-ns
+                operator: Exists
+      ports:
+        - protocol: TCP
+          port: 4143  # Proxy-to-proxy communication port
