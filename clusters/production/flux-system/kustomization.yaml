@@ -12,7 +12,6 @@ resources:
   - tailscale-kustomization.yaml
   - authentik-kustomization.yaml
   - paperless-ngx-kustomization.yaml
-  - linkwarden-kustomization.yaml
   - nextcloud-kustomization.yaml
   - kyverno-kustomization.yaml
   - kyverno-policies-kustomization.yaml
