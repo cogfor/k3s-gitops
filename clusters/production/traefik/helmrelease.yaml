@@ -58,17 +58,16 @@ spec:
       web:
         port: 80
         exposedPort: 80
-        # Redirect HTTP to HTTPS
-        redirectTo:
-          port: websecure
-          priority: 10
       websecure:
         port: 443
         exposedPort: 443
         http3:
           enabled: false
-        tls:
-          enabled: true
+
+    # HTTP to HTTPS redirect via global redirect middleware
+    ingressRoute:
+      dashboard:
+        enabled: false
 
     # Enable Prometheus metrics
     metrics:
