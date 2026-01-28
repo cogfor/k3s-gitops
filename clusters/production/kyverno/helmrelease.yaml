@@ -30,3 +30,9 @@ spec:
         requests:
           cpu: 50m
           memory: 64Mi
+
+    # Disable Linkerd injection for migration hooks (Jobs don't terminate properly with sidecars)
+    crds:
+      migration:
+        podAnnotations:
+          linkerd.io/inject: disabled
