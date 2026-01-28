@@ -16,6 +16,7 @@ resources:
   - kyverno-kustomization.yaml
   - kyverno-policies-kustomization.yaml
   - network-policies-kustomization.yaml
+  - gateway-api-kustomization.yaml
   - linkerd-kustomization.yaml
   - monitoring-kustomization.yaml
   - backup-kustomization.yaml

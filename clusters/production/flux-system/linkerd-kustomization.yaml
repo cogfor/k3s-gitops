@@ -14,6 +14,7 @@ spec:
   timeout: 5m
   dependsOn:
     - name: sources
+    - name: gateway-api
   # SOPS decryption
   decryption:
     provider: sops
