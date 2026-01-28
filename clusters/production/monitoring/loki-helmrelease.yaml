@@ -91,3 +91,9 @@ spec:
         limits:
           cpu: 100m
           memory: 128Mi
+
+    # Disable cache components (insufficient memory on single-node cluster)
+    chunksCache:
+      enabled: false
+    resultsCache:
+      enabled: false
