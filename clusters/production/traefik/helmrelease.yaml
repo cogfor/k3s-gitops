@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: traefik
-      version: ">=34.0.0"
+      version: "33.x"
       sourceRef:
         kind: HelmRepository
         name: traefik
@@ -58,16 +58,17 @@ spec:
       web:
         port: 80
         exposedPort: 80
+        # Redirect HTTP to HTTPS
+        redirectTo:
+          port: websecure
+          priority: 10
       websecure:
         port: 443
         exposedPort: 443
         http3:
           enabled: false
-
-    # HTTP to HTTPS redirect via global redirect middleware
-    ingressRoute:
-      dashboard:
-        enabled: false
+        tls:
+          enabled: true
 
     # Enable Prometheus metrics
     metrics:
