@@ -33,7 +33,10 @@
       "Bash(ls:*)",
       "Bash(KUBECONFIG=~/.kube/k3s-primed.yaml kubectl top:*)",
       "Bash(flux build kustomization:*)",
-      "Bash(kustomize build:*)"
+      "Bash(kustomize build:*)",
+      "Bash(KUBECONFIG=~/.kube/k3s-primed.yaml flux reconcile:*)",
+      "WebFetch(domain:miniflux.app)",
+      "WebFetch(domain:docs.goauthentik.io)"
     ]
   }
 }

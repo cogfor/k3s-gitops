@@ -1,0 +1,147 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: miniflux
+  namespace: miniflux
+  labels:
+    app: miniflux
+    owner: platform
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: miniflux
+  template:
+    metadata:
+      labels:
+        app: miniflux
+        owner: platform
+      annotations:
+        linkerd.io/inject: "enabled"
+    spec:
+      priorityClassName: monitoring
+      initContainers:
+      - name: wait-for-postgres
+        image: docker.io/postgres:16-alpine
+        command:
+        - sh
+        - -c
+        - |
+          until pg_isready -h postgres -U miniflux; do
+            echo "Waiting for PostgreSQL to be ready..."
+            sleep 2
+          done
+          echo "PostgreSQL is ready"
+        env:
+        - name: PGPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: miniflux-secrets
+              key: postgres-password
+      containers:
+      - name: miniflux
+        image: docker.io/miniflux/miniflux:2.2.5
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: miniflux-secrets
+              key: database-url
+        - name: RUN_MIGRATIONS
+          value: "1"
+        - name: CREATE_ADMIN
+          value: "1"
+        - name: ADMIN_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: miniflux-secrets
+              key: admin-username
+        - name: ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: miniflux-secrets
+              key: admin-password
+        - name: BASE_URL
+          value: "https://rss.primed.io"
+        - name: LISTEN_ADDR
+          value: "0.0.0.0:8080"
+        - name: POLLING_FREQUENCY
+          value: "60"
+        - name: BATCH_SIZE
+          value: "100"
+        - name: CLEANUP_FREQUENCY_HOURS
+          value: "48"
+        - name: CLEANUP_ARCHIVE_READ_DAYS
+          value: "60"
+        - name: OAUTH2_PROVIDER
+          value: "oidc"
+        - name: OAUTH2_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: miniflux-secrets
+              key: oauth2-client-id
+        - name: OAUTH2_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: miniflux-secrets
+              key: oauth2-client-secret
+        - name: OAUTH2_REDIRECT_URL
+          value: "https://rss.primed.io/oauth2/oidc/callback"
+        - name: OAUTH2_OIDC_DISCOVERY_ENDPOINT
+          valueFrom:
+            secretKeyRef:
+              name: miniflux-secrets
+              key: oauth2-oidc-discovery-endpoint
+        - name: OAUTH2_USER_CREATION
+          value: "1"
+        livenessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsNonRoot: true
+          runAsUser: 65534
+          capabilities:
+            drop:
+            - ALL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: miniflux
+  namespace: miniflux
+  labels:
+    app: miniflux
+spec:
+  selector:
+    app: miniflux
+  ports:
+  - port: 8080
+    targetPort: 8080
+    name: http
