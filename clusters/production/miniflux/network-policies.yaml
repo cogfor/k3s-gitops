@@ -218,6 +218,28 @@ spec:
         - protocol: TCP
           port: 8086
 ---
+# Allow all pods → Linkerd Policy service
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-linkerd-policy
+  namespace: miniflux
+spec:
+  podSelector: {}
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: linkerd
+          podSelector:
+            matchLabels:
+              linkerd.io/control-plane-component: policy
+      ports:
+        - protocol: TCP
+          port: 8090
+---
 # Allow all pods → Kubernetes API
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
