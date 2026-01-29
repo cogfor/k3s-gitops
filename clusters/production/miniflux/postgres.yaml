@@ -63,7 +63,7 @@ spec:
             command:
             - sh
             - -c
-            - pg_isready -U "$POSTGRES_USER"
+            - pg_isready -U miniflux
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
@@ -73,7 +73,7 @@ spec:
             command:
             - sh
             - -c
-            - pg_isready -U "$POSTGRES_USER"
+            - pg_isready -U miniflux
           initialDelaySeconds: 5
           periodSeconds: 5
           timeoutSeconds: 3
