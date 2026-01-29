@@ -79,27 +79,28 @@ spec:
           value: "48"
         - name: CLEANUP_ARCHIVE_READ_DAYS
           value: "60"
-        - name: OAUTH2_PROVIDER
-          value: "oidc"
-        - name: OAUTH2_CLIENT_ID
-          valueFrom:
-            secretKeyRef:
-              name: miniflux-secrets
-              key: oauth2-client-id
-        - name: OAUTH2_CLIENT_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: miniflux-secrets
-              key: oauth2-client-secret
-        - name: OAUTH2_REDIRECT_URL
-          value: "https://rss.primed.io/oauth2/oidc/callback"
-        - name: OAUTH2_OIDC_DISCOVERY_ENDPOINT
-          valueFrom:
-            secretKeyRef:
-              name: miniflux-secrets
-              key: oauth2-oidc-discovery-endpoint
-        - name: OAUTH2_USER_CREATION
-          value: "1"
+        # OAuth2 temporarily disabled until Authentik provider is configured
+        # - name: OAUTH2_PROVIDER
+        #   value: "oidc"
+        # - name: OAUTH2_CLIENT_ID
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: miniflux-secrets
+        #       key: oauth2-client-id
+        # - name: OAUTH2_CLIENT_SECRET
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: miniflux-secrets
+        #       key: oauth2-client-secret
+        # - name: OAUTH2_REDIRECT_URL
+        #   value: "https://rss.primed.io/oauth2/oidc/callback"
+        # - name: OAUTH2_OIDC_DISCOVERY_ENDPOINT
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: miniflux-secrets
+        #       key: oauth2-oidc-discovery-endpoint
+        # - name: OAUTH2_USER_CREATION
+        #   value: "1"
         livenessProbe:
           httpGet:
             path: /healthcheck
