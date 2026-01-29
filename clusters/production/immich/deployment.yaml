@@ -53,6 +53,8 @@ spec:
           value: "0.0.0.0"
         - name: IMMICH_PORT
           value: "2283"
+        - name: IMMICH_SERVER_URL
+          value: "https://photos.primed.io"
         # Database configuration
         - name: DB_HOSTNAME
           value: "postgres"
