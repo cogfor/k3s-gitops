@@ -49,6 +49,8 @@ spec:
           name: http
         env:
         # Server configuration
+        - name: IMMICH_HOST
+          value: "0.0.0.0"
         - name: IMMICH_PORT
           value: "2283"
         # Database configuration
