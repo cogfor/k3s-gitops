@@ -20,12 +20,7 @@ spec:
         app: miniflux
         owner: platform
       annotations:
-        linkerd.io/inject: "enabled"
-        config.linkerd.io/skip-outbound-ports: "5432"
-        config.linkerd.io/proxy-cpu-request: "10m"
-        config.linkerd.io/proxy-memory-request: "10Mi"
-        config.linkerd.io/proxy-cpu-limit: "100m"
-        config.linkerd.io/proxy-memory-limit: "50Mi"
+        linkerd.io/inject: "disabled"
     spec:
       priorityClassName: monitoring
       initContainers:
