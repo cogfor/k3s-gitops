@@ -33,7 +33,7 @@ spec:
         - --requirepass
         - $(REDIS_PASSWORD)
         - --maxmemory
-        - "1gb"
+        - "500mb"
         - --maxmemory-policy
         - "allkeys-lru"
         - --appendonly
@@ -78,8 +78,8 @@ spec:
             cpu: 100m
             memory: 256Mi
           limits:
-            cpu: 1000m
-            memory: 1Gi
+            cpu: 200m
+            memory: 512Mi
   volumeClaimTemplates:
   - metadata:
       name: data
