@@ -43,7 +43,7 @@ spec:
               key: postgres-password
       containers:
       - name: immich
-        image: ghcr.io/immich-app/immich-server:v1.122.3
+        image: ghcr.io/immich-app/immich-server:v2.5.2
         ports:
         - containerPort: 2283
           name: http
