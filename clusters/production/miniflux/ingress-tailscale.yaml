@@ -5,7 +5,6 @@ metadata:
   name: miniflux-tailscale
   namespace: miniflux
   annotations:
-    tailscale.com/proxy-group: "tailscale-ingress"
     tailscale.com/hostname: "miniflux"
 spec:
   ingressClassName: tailscale
