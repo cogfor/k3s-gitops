@@ -69,21 +69,3 @@ spec:
       limits:
         cpu: 200m
         memory: 256Mi
-
-    # Set default scrape configs to exclude linkerd containers
-    defaultVolumes:
-      - name: pods
-        hostPath:
-          path: /var/log/pods
-      - name: containers
-        hostPath:
-          path: /var/lib/docker/containers
-
-    # Configure the DaemonSet to tolerate file descriptor issues
-    tolerations:
-      - effect: NoSchedule
-        key: node-role.kubernetes.io/control-plane
-        operator: Exists
-      - effect: NoSchedule
-        key: node-role.kubernetes.io/master
-        operator: Exists
