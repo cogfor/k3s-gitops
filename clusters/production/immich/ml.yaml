@@ -34,6 +34,7 @@ spec:
         linkerd.io/inject: "disabled"
     spec:
       priorityClassName: monitoring
+      enableServiceLinks: false
       containers:
       - name: immich-machine-learning
         image: ghcr.io/immich-app/immich-machine-learning:v2.5.2
@@ -49,21 +50,16 @@ spec:
           value: "1"
         - name: MACHINE_LEARNING_WORKER_TIMEOUT
           value: "120"
-        # Override Kubernetes auto-injected service environment variables
-        - name: IMMICH_PORT
-          value: "2283"
-        - name: IMMICH_HOST
-          value: "immich"
         volumeMounts:
         - name: cache
           mountPath: /cache
         resources:
           requests:
-            cpu: 500m
-            memory: 2Gi
+            cpu: 400m
+            memory: 1.5Gi
           limits:
-            cpu: 1000m
-            memory: 3Gi
+            cpu: 800m
+            memory: 2.5Gi
         livenessProbe:
           httpGet:
             path: /ping
