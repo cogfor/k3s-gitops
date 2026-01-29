@@ -8,6 +8,21 @@ This is a production k3s GitOps cluster managed by Flux CD with Zero Trust netwo
 
 ## Key Commands
 
+### Cluster Access
+
+**IMPORTANT:** All `kubectl`, `flux`, and `linkerd` commands require the k3s kubeconfig:
+
+```bash
+# Use this prefix for ALL cluster commands
+KUBECONFIG=~/.kube/k3s-primed.yaml kubectl ...
+KUBECONFIG=~/.kube/k3s-primed.yaml flux ...
+KUBECONFIG=~/.kube/k3s-primed.yaml linkerd ...
+
+# Example:
+KUBECONFIG=~/.kube/k3s-primed.yaml kubectl get pods -A
+KUBECONFIG=~/.kube/k3s-primed.yaml flux get kustomizations
+```
+
 ### Validate Changes Locally
 ```bash
 # Dry-run a component locally (no cluster access needed)
@@ -20,34 +35,34 @@ flux build kustomization linkerd --path=clusters/production/linkerd
 ### Preview Changes Against Live Cluster
 ```bash
 # Show diff between local changes and deployed state (requires cluster access)
-flux diff kustomization <component> --path=clusters/production/<component> --namespace=flux-system
+KUBECONFIG=~/.kube/k3s-primed.yaml flux diff kustomization <component> --path=clusters/production/<component> --namespace=flux-system
 
 # Example:
-flux diff kustomization authentik --path=clusters/production/authentik --namespace=flux-system
+KUBECONFIG=~/.kube/k3s-primed.yaml flux diff kustomization authentik --path=clusters/production/authentik --namespace=flux-system
 ```
 
 ### Apply Changes
 ```bash
 # Force reconciliation after merging changes
-flux reconcile kustomization <component> --with-source
+KUBECONFIG=~/.kube/k3s-primed.yaml flux reconcile kustomization <component> --with-source
 
 # Example:
-flux reconcile kustomization linkerd --with-source
+KUBECONFIG=~/.kube/k3s-primed.yaml flux reconcile kustomization linkerd --with-source
 ```
 
 ### Check Deployment Status
 ```bash
 # View all Flux resources
-flux get all
+KUBECONFIG=~/.kube/k3s-primed.yaml flux get all
 
 # Check kustomization status
-flux get kustomizations
+KUBECONFIG=~/.kube/k3s-primed.yaml flux get kustomizations
 
 # Check HelmRelease status across all namespaces
-flux get helmreleases -A
+KUBECONFIG=~/.kube/k3s-primed.yaml flux get helmreleases -A
 
 # View Flux logs (useful for debugging)
-flux logs --level=error
+KUBECONFIG=~/.kube/k3s-primed.yaml flux logs --level=error
 ```
 
 ### Secrets Management
@@ -65,30 +80,30 @@ sops clusters/production/<component>/<secret>.enc.yaml
 ### Debugging
 ```bash
 # Check pod status
-kubectl get pods -n <namespace>
+KUBECONFIG=~/.kube/k3s-primed.yaml kubectl get pods -n <namespace>
 
 # View logs (including crashed containers)
-kubectl logs -n <namespace> deployment/<name> --previous
+KUBECONFIG=~/.kube/k3s-primed.yaml kubectl logs -n <namespace> deployment/<name> --previous
 
 # Describe pod for events
-kubectl describe pod -n <namespace> <pod-name>
+KUBECONFIG=~/.kube/k3s-primed.yaml kubectl describe pod -n <namespace> <pod-name>
 
 # Check NetworkPolicies
-kubectl get netpol -n <namespace>
-kubectl describe netpol -n <namespace> <policy-name>
+KUBECONFIG=~/.kube/k3s-primed.yaml kubectl get netpol -n <namespace>
+KUBECONFIG=~/.kube/k3s-primed.yaml kubectl describe netpol -n <namespace> <policy-name>
 
 # Debug network connectivity
-kubectl run -it --rm debug --image=nicolaka/netshoot -n <namespace> -- bash
+KUBECONFIG=~/.kube/k3s-primed.yaml kubectl run -it --rm debug --image=nicolaka/netshoot -n <namespace> -- bash
 
 # Check Linkerd proxy status
-linkerd check --proxy -n <namespace>
+KUBECONFIG=~/.kube/k3s-primed.yaml linkerd check --proxy -n <namespace>
 
 # View service mesh metrics
-linkerd viz stat deploy -n <namespace>
-linkerd viz tap deploy/<name> -n <namespace>
+KUBECONFIG=~/.kube/k3s-primed.yaml linkerd viz stat deploy -n <namespace>
+KUBECONFIG=~/.kube/k3s-primed.yaml linkerd viz tap deploy/<name> -n <namespace>
 
 # Check Linkerd identity
-linkerd identity -n <namespace>
+KUBECONFIG=~/.kube/k3s-primed.yaml linkerd identity -n <namespace>
 ```
 
 ## Architecture
@@ -227,11 +242,11 @@ This prevents race conditions (e.g., deploying app before ingress controller is 
 
 Before submitting PRs:
 
-1. Run `flux build kustomization <component>` for every modified component
+1. Run `flux build kustomization <component>` for every modified component (no cluster access needed)
 2. Verify no validation errors
 3. If changing cluster-wide resources (CRDs, policies): `flux build kustomization flux-system`
-4. With cluster access: `flux diff kustomization <component>` to preview changes
-5. After merge: `flux reconcile kustomization <component> --with-source`
+4. With cluster access: `KUBECONFIG=~/.kube/k3s-primed.yaml flux diff kustomization <component>` to preview changes
+5. After merge: `KUBECONFIG=~/.kube/k3s-primed.yaml flux reconcile kustomization <component> --with-source`
 
 ## Known Limitations
 

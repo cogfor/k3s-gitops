@@ -2,7 +2,38 @@
   "permissions": {
     "allow": [
       "Bash(openssl rand:*)",
-      "Bash(sops:*)"
+      "Bash(sops:*)",
+      "Bash(flux get:*)",
+      "Bash(export KUBECONFIG=~/.kube/k3s-primed.yaml)",
+      "Bash(kubectl get:*)",
+      "Bash(flux suspend:*)",
+      "Bash(flux resume:*)",
+      "Bash(kubectl logs:*)",
+      "Bash(kubectl describe:*)",
+      "Bash(kubectl delete:*)",
+      "Bash(helm search repo:*)",
+      "Bash(helm repo list:*)",
+      "mcp__brave-search__brave_web_search",
+      "WebFetch(domain:docs.buoyant.io)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:community.traefik.io)",
+      "WebFetch(domain:nvd.nist.gov)",
+      "WebFetch(domain:linkerd.io)",
+      "Bash(KUBECONFIG=~/.kube/k3s-primed.yaml flux get:*)",
+      "Bash(linkerd check:*)",
+      "Bash(KUBECONFIG=~/.kube/k3s-primed.yaml linkerd check:*)",
+      "Bash(KUBECONFIG=~/.kube/k3s-primed.yaml linkerd version:*)",
+      "Bash(KUBECONFIG=~/.kube/k3s-primed.yaml kubectl get:*)",
+      "Bash(openssl x509:*)",
+      "Bash(KUBECONFIG=~/.kube/k3s-primed.yaml flux build kustomization:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "WebFetch(domain:docs.immich.app)",
+      "Bash(ls:*)",
+      "Bash(KUBECONFIG=~/.kube/k3s-primed.yaml kubectl top:*)",
+      "Bash(flux build kustomization:*)",
+      "Bash(kustomize build:*)"
     ]
   }
 }
