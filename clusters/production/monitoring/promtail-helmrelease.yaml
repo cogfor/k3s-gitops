@@ -20,7 +20,19 @@ spec:
       - url: http://loki-gateway/loki/api/v1/push
         tenant_id: k8s-cluster
 
+      # Optimize positions file handling
+      positions:
+        filename: /run/promtail/positions.yaml
+        sync_period: 30s
+        ignore_invalid_yaml: true
+
       snippets:
+        # Add relabel configs to drop linkerd containers BEFORE files are opened
+        extraRelabelConfigs: |
+          - action: drop
+            source_labels: [__meta_kubernetes_pod_container_name]
+            regex: 'linkerd-.*'
+
         extraScrapeConfigs: |
           # Kubernetes API audit logs (requires hostPath mount below)
           - job_name: kubernetes-audit
@@ -30,6 +42,9 @@ spec:
               labels:
                 job: kubernetes-audit
                 __path__: /host/k3s/logs/audit.log
+
+        pipelineStages: |
+          - cri: {}
 
     # CRITICAL: Mount host directories to access audit logs and pod logs
     extraVolumes:
@@ -54,3 +69,21 @@ spec:
       limits:
         cpu: 200m
         memory: 256Mi
+
+    # Set default scrape configs to exclude linkerd containers
+    defaultVolumes:
+      - name: pods
+        hostPath:
+          path: /var/log/pods
+      - name: containers
+        hostPath:
+          path: /var/lib/docker/containers
+
+    # Configure the DaemonSet to tolerate file descriptor issues
+    tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/control-plane
+        operator: Exists
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/master
+        operator: Exists
