@@ -61,18 +61,18 @@ spec:
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: paperless-ngx-secrets
-                  key: postgres-user
+                  name: paperless-db-credentials
+                  key: POSTGRES_USER
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: paperless-ngx-secrets
-                  key: postgres-password
+                  name: paperless-db-credentials
+                  key: POSTGRES_PASSWORD
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
-                  name: paperless-ngx-secrets
-                  key: postgres-db
+                  name: paperless-db-credentials
+                  key: POSTGRES_DB
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:

@@ -5,6 +5,7 @@ resources:
   - namespace.yaml
   - s3-secret.yaml
   - authentik-db-credentials.yaml
+  - paperless-db-credentials.yaml
   - authentik-postgres-backup.yaml
   - paperless-postgres-backup.yaml
   - allow-backup-to-postgres.yaml
