@@ -7,6 +7,7 @@ resources:
   - secrets.enc.yaml
   - postgres.yaml
   - deployment.yaml
+  - middleware-tailscale.yaml
   - ingressroute.yaml
   - certificate.yaml
   - network-policies.yaml
