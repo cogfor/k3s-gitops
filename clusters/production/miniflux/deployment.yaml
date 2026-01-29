@@ -20,7 +20,7 @@ spec:
         app: miniflux
         owner: platform
       annotations:
-        linkerd.io/inject: "disabled"
+        linkerd.io/inject: "enabled"
     spec:
       priorityClassName: monitoring
       initContainers:

@@ -10,8 +10,6 @@ spec:
   routes:
     - match: Host(`rss.primed.io`)
       kind: Rule
-      middlewares:
-        - name: tailscale-ipallowlist
       services:
         - name: miniflux
           port: 8080
