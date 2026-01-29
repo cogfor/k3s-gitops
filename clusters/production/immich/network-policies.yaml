@@ -257,7 +257,11 @@ spec:
               kubernetes.io/metadata.name: linkerd
       ports:
         - protocol: TCP
-          port: 8443
+          port: 8080
+        - protocol: TCP
+          port: 8086
+        - protocol: TCP
+          port: 8090
         - protocol: TCP
           port: 4143
         - protocol: TCP
