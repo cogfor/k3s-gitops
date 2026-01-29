@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: immich-hetzner-storagebox
+spec:
+  capacity:
+    storage: 1Ti
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: cifs
+  mountOptions:
+    - dir_mode=0770
+    - file_mode=0660
+    - uid=1000        # Immich container user
+    - gid=1000
+    - nobrl           # Disable byte-range locks (performance)
+    - cache=strict    # Aggressive caching
+    - actimeo=30      # Attribute cache timeout (performance)
+    - prefixpath=backup/immich  # Mount subdirectory within the share
+    - vers=3.1.1      # SMB 3.1.1
+  csi:
+    driver: smb.csi.k8s.io
+    volumeHandle: immich-hetzner-storagebox
+    volumeAttributes:
+      # SMB source must be the share (//server/share). Use prefixpath to mount a subdirectory.
+      source: //u492791-sub5.your-storagebox.de/u492791-sub5
+    nodeStageSecretRef:
+      name: hetzner-cifs-credentials
+      namespace: immich
