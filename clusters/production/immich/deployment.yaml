@@ -87,7 +87,9 @@ spec:
               key: redis-password
         # Immich configuration
         - name: IMMICH_MACHINE_LEARNING_ENABLED
-          value: "false"
+          value: "true"
+        - name: IMMICH_MACHINE_LEARNING_URL
+          value: "http://immich-machine-learning:3003"
         - name: UPLOAD_LOCATION
           value: /usr/src/app/upload
         # OAuth2 SSO with Authentik
