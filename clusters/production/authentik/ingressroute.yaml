@@ -8,13 +8,11 @@ spec:
   entryPoints:
     - websecure
   routes:
-    # Admin interface via public hostname - restricted to Tailscale IPs
+    # Admin interface via public hostname - protected by Authentik auth
     # Priority: 100 (highest - most specific)
     - match: Host(`auth.primed.io`) && PathPrefix(`/if/admin`)
       kind: Rule
       priority: 100
-      middlewares:
-        - name: tailscale-ipallowlist
       services:
         - name: authentik-server
           port: 80
