@@ -49,6 +49,11 @@ spec:
           value: "1"
         - name: MACHINE_LEARNING_WORKER_TIMEOUT
           value: "120"
+        # Override Kubernetes auto-injected service environment variables
+        - name: IMMICH_PORT
+          value: "2283"
+        - name: IMMICH_HOST
+          value: "immich"
         volumeMounts:
         - name: cache
           mountPath: /cache
