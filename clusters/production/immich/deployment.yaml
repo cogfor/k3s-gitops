@@ -48,6 +48,9 @@ spec:
         - containerPort: 2283
           name: http
         env:
+        # Server configuration
+        - name: IMMICH_PORT
+          value: "2283"
         # Database configuration
         - name: DB_HOSTNAME
           value: "postgres"
