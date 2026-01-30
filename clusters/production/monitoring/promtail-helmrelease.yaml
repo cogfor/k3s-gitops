@@ -37,9 +37,8 @@ spec:
                 job: kubernetes-audit
                 __path__: /host/k3s/logs/audit.log
 
-        pipelineStages: |
+        pipelineStages:
           - cri: {}
-          # Drop linkerd sidecar logs to reduce file descriptor usage
           - match:
               selector: '{container=~"linkerd-.*"}'
               action: drop
