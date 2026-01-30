@@ -16,6 +16,9 @@ spec:
         namespace: flux-system
       interval: 12h
   values:
+    nameOverride: vikunja
+    fullnameOverride: vikunja
+
     vikunja:
       image:
         repository: docker.io/vikunja/vikunja
