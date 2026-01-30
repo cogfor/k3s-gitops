@@ -1,0 +1,26 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vikunja-vikunja-config
+  namespace: vikunja
+data:
+  config.yml: |
+    service:
+      publicurl: https://tasks.primed.io
+      enableregistration: false
+    database:
+      type: postgres
+      host: postgres
+      database: vikunja
+      user: vikunja
+    redis:
+      enabled: true
+      host: redis:6379
+    auth:
+      openid:
+        enabled: true
+        redirecturl: https://tasks.primed.io/auth/openid/authentik
+        providers:
+          - name: authentik
+            authurl: https://auth.primed.io/application/o/vikunja/
