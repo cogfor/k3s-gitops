@@ -76,16 +76,6 @@ spec:
             secretKeyRef:
               name: vikunja-secrets
               key: redis-password
-        VIKUNJA_AUTH_OPENID_PROVIDERS_0_CLIENTID:
-          valueFrom:
-            secretKeyRef:
-              name: vikunja-secrets
-              key: oauth-client-id
-        VIKUNJA_AUTH_OPENID_PROVIDERS_0_CLIENTSECRET:
-          valueFrom:
-            secretKeyRef:
-              name: vikunja-secrets
-              key: oauth-client-secret
 
       resources:
         requests:

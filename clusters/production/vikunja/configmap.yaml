@@ -22,5 +22,9 @@ data:
         enabled: true
         redirecturl: https://tasks.primed.io/auth/openid/authentik
         providers:
-          - name: authentik
+          authentik:
+            name: "Authentik"
             authurl: https://auth.primed.io/application/o/vikunja/
+            clientid: JFDznuPdO1rJgbaRrb85ks6rCHzWTGBZN0HwXIUO
+            clientsecret: duRK2sGlqN9A7tlkKKchsGdY9WnC9jg6MPpl7CZWyJRi8BOOZoUz04H5Z6Pchc0DrLSZxp7X4AmTKeoGgQWhSWyiy6GMgtw0b0V13FRLwgtOwD3fS20L9KEnA8XCOOXJ
+            scope: openid profile email
