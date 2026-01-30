@@ -1,0 +1,88 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: vikunja
+  namespace: vikunja
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: vikunja
+      version: "latest"
+      sourceRef:
+        kind: HelmRepository
+        name: vikunja
+        namespace: flux-system
+      interval: 12h
+  values:
+    vikunja:
+      service:
+        publicurl: "https://tasks.primed.io"
+        enableregistration: false
+        jwtsecret:
+          valueFrom:
+            secretKeyRef:
+              name: vikunja-secrets
+              key: jwt-secret
+
+      database:
+        type: postgres
+        host: postgres
+        port: 5432
+        database: vikunja
+        user: vikunja
+        password:
+          valueFrom:
+            secretKeyRef:
+              name: vikunja-secrets
+              key: postgres-password
+
+      redis:
+        enabled: true
+        host: redis:6379
+        password:
+          valueFrom:
+            secretKeyRef:
+              name: vikunja-secrets
+              key: redis-password
+
+      auth:
+        openid:
+          enabled: true
+          redirecturl: "https://tasks.primed.io/auth/openid/authentik"
+          providers:
+            - name: authentik
+              authurl: "https://auth.primed.io/application/o/vikunja/"
+              clientid:
+                valueFrom:
+                  secretKeyRef:
+                    name: vikunja-secrets
+                    key: oauth-client-id
+              clientsecret:
+                valueFrom:
+                  secretKeyRef:
+                    name: vikunja-secrets
+                    key: oauth-client-secret
+
+    podAnnotations:
+      linkerd.io/inject: "enabled"
+
+    replicaCount: 1
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+    persistence:
+      enabled: true
+      storageClass: local-path
+      size: 10Gi
+
+    service:
+      type: ClusterIP
+      port: 3456

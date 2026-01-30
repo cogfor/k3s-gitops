@@ -22,6 +22,7 @@ resources:
   - linkerd-kustomization.yaml
   - monitoring-kustomization.yaml
   - backup-kustomization.yaml
+  - vikunja-kustomization.yaml
 patches:
   - patch: |-
       apiVersion: apps/v1
