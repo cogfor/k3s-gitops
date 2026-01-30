@@ -60,11 +60,17 @@ spec:
             secretKeyRef:
               name: vikunja-secrets
               key: jwt-secret
+        VIKUNJA_DATABASE_TYPE: postgres
+        VIKUNJA_DATABASE_HOST: postgres
+        VIKUNJA_DATABASE_DATABASE: vikunja
+        VIKUNJA_DATABASE_USER: vikunja
         VIKUNJA_DATABASE_PASSWORD:
           valueFrom:
             secretKeyRef:
               name: vikunja-secrets
               key: postgres-password
+        VIKUNJA_REDIS_ENABLED: "true"
+        VIKUNJA_REDIS_HOST: redis:6379
         VIKUNJA_REDIS_PASSWORD:
           valueFrom:
             secretKeyRef:
