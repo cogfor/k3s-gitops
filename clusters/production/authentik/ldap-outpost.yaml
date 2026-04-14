@@ -24,7 +24,7 @@ spec:
       priorityClassName: cluster-critical
       containers:
         - name: ldap
-          image: ghcr.io/goauthentik/ldap:2025.10.3
+          image: ghcr.io/goauthentik/ldap:2026.2.2
           imagePullPolicy: IfNotPresent
           ports:
             - name: ldaps
