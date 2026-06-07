@@ -23,6 +23,7 @@ resources:
   - monitoring-kustomization.yaml
   - backup-kustomization.yaml
   - vikunja-kustomization.yaml
+  - voxels-demo-kustomization.yaml
 patches:
   - patch: |-
       apiVersion: apps/v1

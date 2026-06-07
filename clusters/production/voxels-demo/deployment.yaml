@@ -1,0 +1,67 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: voxels-demo
+  namespace: voxels-demo
+  labels:
+    app: voxels-demo
+    owner: platform
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: voxels-demo
+  template:
+    metadata:
+      labels:
+        app: voxels-demo
+        owner: platform
+      annotations:
+        linkerd.io/inject: "disabled"
+    spec:
+      containers:
+        - name: voxels-demo
+          image: ghcr.io/cogfor/voxels:dev-3e04a3c
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 30
+            timeoutSeconds: 3
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: voxels-demo
+  namespace: voxels-demo
+  labels:
+    app: voxels-demo
+    owner: platform
+spec:
+  selector:
+    app: voxels-demo
+  ports:
+    - port: 80
+      targetPort: http
+      name: http
+
