@@ -20,6 +20,8 @@ spec:
       annotations:
         linkerd.io/inject: "disabled"
     spec:
+      imagePullSecrets:
+        - name: ghcr-voxels-pull
       containers:
         - name: voxels-demo
           image: ghcr.io/cogfor/voxels:dev-3e04a3c
@@ -64,4 +66,3 @@ spec:
     - port: 80
       targetPort: http
       name: http
-

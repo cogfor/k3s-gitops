@@ -4,8 +4,8 @@ kind: Kustomization
 namespace: voxels-demo
 resources:
   - namespace.yaml
+  - ghcr-pull-secret.enc.yaml
   - deployment.yaml
   - certificate.yaml
   - ingressroute.yaml
   - network-policies.yaml
-
