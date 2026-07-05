@@ -24,7 +24,7 @@ spec:
         - name: ghcr-voxels-pull
       containers:
         - name: voxels-demo
-          image: ghcr.io/cogfor/voxels-demo:dev-470954ba3f58af13b8634893a5c30518035d2d70
+          image: ghcr.io/cogfor/voxels-demo:dev-0f6cc2c41bc25f7ca7ce0f9105dd1204b6968566
           imagePullPolicy: Always
           ports:
             - containerPort: 80
