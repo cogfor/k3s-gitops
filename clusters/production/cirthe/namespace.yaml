@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cirthe
+  labels:
+    name: cirthe
+    owner: platform
+  annotations:
+    linkerd.io/inject: disabled

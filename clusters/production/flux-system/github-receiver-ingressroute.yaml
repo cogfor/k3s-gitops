@@ -1,0 +1,16 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: github-receiver
+  namespace: flux-system
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`gitops-webhook.primed.io`)
+      kind: Rule
+      services:
+        - name: webhook-receiver
+          port: 80
+  tls:
+    secretName: flux-github-webhook-tls

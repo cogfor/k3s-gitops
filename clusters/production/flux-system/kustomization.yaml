@@ -24,6 +24,10 @@ resources:
   - backup-kustomization.yaml
   - vikunja-kustomization.yaml
   - voxels-demo-kustomization.yaml
+  - cirthe-kustomization.yaml
+  - github-receiver.yaml
+  - github-receiver-certificate.yaml
+  - github-receiver-ingressroute.yaml
 patches:
   - patch: |-
       apiVersion: apps/v1

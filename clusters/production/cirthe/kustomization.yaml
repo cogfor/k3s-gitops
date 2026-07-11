@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: cirthe
+resources:
+  - namespace.yaml
+  - ghcr-pull-secret.enc.yaml
+  - deployment.yaml
+  - ingressroute.yaml
+  - certificate.yaml
+  - network-policies.yaml
+images:
+  - name: ghcr.io/cogfor/cirthe.com
+    newName: ghcr.io/cogfor/cirthe.com
+    newTag: sha-4052f10e60918397681d86bc5fa091945ebce857
+    digest: ''
+replicas:
+  - name: cirthe
+    count: 2

@@ -1,0 +1,16 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: cirthe
+  namespace: cirthe
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`cirthe.com`) || Host(`www.cirthe.com`)
+      kind: Rule
+      services:
+        - name: cirthe
+          port: 8080
+  tls:
+    secretName: cirthe-tls

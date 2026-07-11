@@ -36,6 +36,26 @@ spec:
           port: 9443  # Authentik HTTPS
         - protocol: TCP
           port: 3000  # Linkwarden
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: cirthe
+          podSelector:
+            matchLabels:
+              app: cirthe
+      ports:
+        - protocol: TCP
+          port: 8080
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: flux-system
+          podSelector:
+            matchLabels:
+              app: notification-controller
+      ports:
+        - protocol: TCP
+          port: 9292
 ---
 # Allow Traefik → DNS
 apiVersion: networking.k8s.io/v1
