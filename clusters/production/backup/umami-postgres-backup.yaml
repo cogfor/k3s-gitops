@@ -1,0 +1,105 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: umami-postgres-backup
+  namespace: backup
+spec:
+  schedule: "0 4 * * *"
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 3600
+  successfulJobsHistoryLimit: 7
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      activeDeadlineSeconds: 1800
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: docker.io/postgres:16-alpine
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  DATE=$(date +%Y%m%d-%H%M%S)
+                  DUMP_FILE="umami-db-${DATE}.sql"
+                  BACKUP_FILE="umami-db-${DATE}.sql.gz"
+
+                  PGPASSWORD="${POSTGRES_PASSWORD}" pg_dump \
+                    -h "${POSTGRES_HOST}" \
+                    -U "${POSTGRES_USER}" \
+                    -d "${POSTGRES_DB}" \
+                    > "/tmp/${DUMP_FILE}"
+                  gzip "/tmp/${DUMP_FILE}"
+
+                  apk add --no-cache aws-cli
+                  aws s3 cp "/tmp/${BACKUP_FILE}" \
+                    "s3://${S3_BUCKET}/umami-db/${BACKUP_FILE}" \
+                    --endpoint-url "${S3_ENDPOINT}"
+
+                  echo "Backup ${BACKUP_FILE} uploaded successfully"
+
+                  CUTOFF_EPOCH=$(($(date +%s) - 30 * 86400))
+                  CUTOFF_DATE=$(date -d "@${CUTOFF_EPOCH}" +%Y%m%d)
+
+                  aws s3 ls "s3://${S3_BUCKET}/umami-db/" --endpoint-url "${S3_ENDPOINT}" | \
+                    awk '{print $4}' | \
+                    while read -r file; do
+                      if [ -n "${file}" ]; then
+                        FILE_DATE=$(echo "${file}" | sed 's/umami-db-\([0-9]\{8\}\).*/\1/')
+                        if [ "${FILE_DATE}" != "${file}" ] && [ "${FILE_DATE}" -lt "${CUTOFF_DATE}" ]; then
+                          echo "Removing old backup: ${file}"
+                          aws s3 rm "s3://${S3_BUCKET}/umami-db/${file}" --endpoint-url "${S3_ENDPOINT}"
+                        fi
+                      fi
+                    done
+
+                  echo "Cleanup complete"
+              env:
+                - name: POSTGRES_HOST
+                  value: postgres.umami.svc.cluster.local
+                - name: POSTGRES_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: umami-db-credentials
+                      key: POSTGRES_USER
+                - name: POSTGRES_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: umami-db-credentials
+                      key: POSTGRES_PASSWORD
+                - name: POSTGRES_DB
+                  valueFrom:
+                    secretKeyRef:
+                      name: umami-db-credentials
+                      key: POSTGRES_DB
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: s3-credentials
+                      key: AWS_ACCESS_KEY_ID
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: s3-credentials
+                      key: AWS_SECRET_ACCESS_KEY
+                - name: S3_ENDPOINT
+                  valueFrom:
+                    secretKeyRef:
+                      name: s3-credentials
+                      key: S3_ENDPOINT
+                - name: S3_BUCKET
+                  valueFrom:
+                    secretKeyRef:
+                      name: s3-credentials
+                      key: S3_BUCKET
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 128Mi
+                limits:
+                  cpu: 200m
+                  memory: 256Mi

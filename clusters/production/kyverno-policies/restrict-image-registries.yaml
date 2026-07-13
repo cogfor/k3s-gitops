@@ -31,8 +31,8 @@ spec:
       validate:
         message: >-
           Images must come from approved registries:
-          ghcr.io, docker.io, docker.umami.is, quay.io, registry.k8s.io, k8s.gcr.io, or cr.l5d.io
+          ghcr.io, docker.io, quay.io, registry.k8s.io, k8s.gcr.io, or cr.l5d.io
         foreach:
           - list: "request.object.spec.containers"
             pattern:
-              image: "ghcr.io/* | docker.io/* | docker.umami.is/* | quay.io/* | registry.k8s.io/* | k8s.gcr.io/* | cr.l5d.io/*"
+              image: "ghcr.io/* | docker.io/* | quay.io/* | registry.k8s.io/* | k8s.gcr.io/* | cr.l5d.io/*"

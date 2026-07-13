@@ -36,20 +36,7 @@
       "Bash(kustomize build:*)",
       "Bash(KUBECONFIG=~/.kube/k3s-primed.yaml flux reconcile:*)",
       "WebFetch(domain:miniflux.app)",
-      "WebFetch(domain:docs.goauthentik.io)",
-      "Bash(dig:*)",
-      "Bash(curl -I https://photos.primed.io)",
-      "Bash(KUBECONFIG=~/.kube/k3s-primed.yaml kubectl run:*)",
-      "Bash(KUBECONFIG=~/.kube/k3s-primed.yaml kubectl logs:*)",
-      "Bash(KUBECONFIG=~/.kube/k3s-primed.yaml kubectl exec:*)",
-      "Bash(curl:*)",
-      "Bash(wc:*)",
-      "WebFetch(domain:vikunja.io)",
-      "WebFetch(domain:integrations.goauthentik.io)",
-      "WebFetch(domain:artifacthub.io)",
-      "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:kolaente.dev)",
-      "Bash(KUBECONFIG=~/.kube/k3s-primed.yaml helm template:*)"
+      "WebFetch(domain:docs.goauthentik.io)"
     ]
   }
 }

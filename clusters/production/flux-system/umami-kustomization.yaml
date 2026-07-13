@@ -20,5 +20,6 @@ spec:
   dependsOn:
     - name: cert-manager
     - name: traefik
+    - name: tailscale
     - name: network-policies
     - name: priorityclasses

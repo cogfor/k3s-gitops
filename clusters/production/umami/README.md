@@ -1,8 +1,10 @@
 # Umami analytics
 
-Umami is exposed at `https://analytics.cirthe.com`.
+The tracker script and collection endpoint are exposed at `https://analytics.cirthe.com`.
 
-After the first deployment, sign in with the default `admin` / `umami` credentials and change the password immediately.
+The dashboard is available only through Tailscale at `https://umami.tail6cd0b8.ts.net`.
+
+After the first deployment, sign in through Tailscale with the default `admin` / `umami` credentials and change the password immediately.
 
 Add `cirthe.com` as the first website in the Umami dashboard.
 

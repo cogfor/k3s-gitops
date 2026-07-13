@@ -9,4 +9,5 @@ resources:
   - deployment.yaml
   - certificate.yaml
   - ingressroute.yaml
+  - ingress-tailscale.yaml
   - network-policies.yaml

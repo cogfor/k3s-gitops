@@ -8,7 +8,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`analytics.cirthe.com`)
+    - match: Host(`analytics.cirthe.com`) && (Path(`/script.js`) || Path(`/api/send`))
       kind: Rule
       services:
         - name: umami
