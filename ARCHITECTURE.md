@@ -145,6 +145,7 @@ graph LR
 | **Authentik** | SSO, OAuth2, LDAP | PostgreSQL 18 + Redis 8 | `local-path` PVCs (10Gi + 8Gi) |
 | **LDAP Outpost** | LDAP server | - | Connects to Authentik API |
 | **Linkwarden** | Bookmark manager | PostgreSQL 16 | `local-path` PVC (5Gi) |
+| **Umami** | Privacy-focused web analytics | PostgreSQL 16 | `local-path` PVC (5Gi) |
 
 ### Network Architecture
 
