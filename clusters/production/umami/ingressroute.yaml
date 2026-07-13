@@ -1,0 +1,17 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: umami
+  namespace: umami
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`analytics.cirthe.com`) && (Path(`/script.js`) || Path(`/api/send`))
+      kind: Rule
+      services:
+        - name: umami
+          port: 3000
+  tls:
+    secretName: umami-tls

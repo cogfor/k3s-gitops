@@ -1,0 +1,110 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: umami
+  namespace: umami
+  labels:
+    app: umami
+    owner: platform
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: umami
+  template:
+    metadata:
+      labels:
+        app: umami
+        owner: platform
+      annotations:
+        linkerd.io/inject: disabled
+    spec:
+      priorityClassName: monitoring
+      initContainers:
+        - name: wait-for-postgres
+          image: docker.io/postgres:16-alpine
+          command:
+            - sh
+            - -c
+            - |
+              until pg_isready -h postgres -U umami -d umami; do
+                echo "Waiting for PostgreSQL to be ready..."
+                sleep 2
+              done
+              echo "PostgreSQL is ready"
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: umami-secrets
+                  key: postgres-password
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 50m
+              memory: 32Mi
+      containers:
+        - name: umami
+          image: ghcr.io/umami-software/umami:3.2.0@sha256:8edfe4beaef13f9d1300619fa264ef250a3688df9cc54d24ca830ca31cb475ec
+          ports:
+            - containerPort: 3000
+              name: http
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: umami-secrets
+                  key: database-url
+            - name: APP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: umami-secrets
+                  key: app-secret
+            - name: DISABLE_TELEMETRY
+              value: "1"
+            - name: DISABLE_UPDATES
+              value: "1"
+            - name: PRIVATE_MODE
+              value: "1"
+          livenessProbe:
+            httpGet:
+              path: /api/heartbeat
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          readinessProbe:
+            httpGet:
+              path: /api/heartbeat
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: umami
+  namespace: umami
+  labels:
+    app: umami
+spec:
+  selector:
+    app: umami
+  ports:
+    - port: 3000
+      targetPort: 3000
+      name: http

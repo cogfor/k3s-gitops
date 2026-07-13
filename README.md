@@ -9,6 +9,7 @@ This repository contains the GitOps configuration for the k3s cluster running on
 - **Traefik** - Ingress controller
 - **Authentik** - SSO and identity provider
 - **Linkwarden** - Bookmark manager
+- **Umami** - Privacy-focused web analytics for Cirthe and future websites
 
 ## Secrets Management
 
