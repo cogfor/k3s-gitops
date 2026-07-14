@@ -1,0 +1,28 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: tarka-com-tls
+  namespace: tarka
+spec:
+  secretName: tarka-com-tls
+  issuerRef:
+    name: tarka-letsencrypt-prod
+    kind: Issuer
+  dnsNames:
+    - nicholson31tarka.com
+    - www.nicholson31tarka.com
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: tarka-nl-tls
+  namespace: tarka
+spec:
+  secretName: tarka-nl-tls
+  issuerRef:
+    name: tarka-letsencrypt-prod
+    kind: Issuer
+  dnsNames:
+    - nicholson31tarka.nl
+    - www.nicholson31tarka.nl

@@ -1,0 +1,20 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: tarka-letsencrypt-prod
+  namespace: tarka
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: rene@primed.io
+    privateKeySecretRef:
+      name: tarka-letsencrypt-prod
+    solvers:
+      - http01:
+          ingress:
+            ingressClassName: traefik
+        selector:
+          dnsZones:
+            - nicholson31tarka.com
+            - nicholson31tarka.nl

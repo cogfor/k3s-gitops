@@ -25,6 +25,7 @@ resources:
   - vikunja-kustomization.yaml
   - voxels-demo-kustomization.yaml
   - cirthe-kustomization.yaml
+  - tarka-kustomization.yaml
   - umami-kustomization.yaml
   - github-receiver.yaml
   - github-receiver-certificate.yaml
