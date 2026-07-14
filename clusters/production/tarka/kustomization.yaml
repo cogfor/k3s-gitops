@@ -6,15 +6,15 @@ resources:
   - namespace.yaml
   - ghcr-pull-secret.enc.yaml
   - deployment.yaml
-  - clusterissuer.yaml
+  - issuer.yaml
   - ingressroute.yaml
   - certificate.yaml
   - network-policies.yaml
 images:
   - name: ghcr.io/cogfor/nicholson31tarka.com
     newName: ghcr.io/cogfor/nicholson31tarka.com
-    newTag: sha-d3fa1bbfae2479c7936c87fc61c793240b22582b
-    digest: sha256:b4635dd45e9e07d2e5e69f3c462d1725a88e1609f5f37fca992ab085ac08a9d5
+    newTag: sha-ee3ad81dee18c72e9c691dd91b99c92a3485e65b
+    digest: sha256:75183798210d2b0ea506cd9ac25daa5b8d509f1ade6a3a79c03b3857438d2160
 replicas:
   - name: tarka
     count: 2

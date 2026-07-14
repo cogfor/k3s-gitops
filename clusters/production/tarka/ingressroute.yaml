@@ -2,16 +2,37 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: tarka
+  name: tarka-com
   namespace: tarka
 spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`nicholson31tarka.com`) || Host(`www.nicholson31tarka.com`)
+    - match: >-
+        Host(`nicholson31tarka.com`) ||
+        Host(`www.nicholson31tarka.com`)
       kind: Rule
       services:
         - name: tarka
           port: 8080
   tls:
-    secretName: tarka-tls
+    secretName: tarka-com-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: tarka-nl
+  namespace: tarka
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: >-
+        Host(`nicholson31tarka.nl`) ||
+        Host(`www.nicholson31tarka.nl`)
+      kind: Rule
+      services:
+        - name: tarka
+          port: 8080
+  tls:
+    secretName: tarka-nl-tls
