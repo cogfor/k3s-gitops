@@ -10,11 +10,21 @@ resources:
   - ingressroute.yaml
   - certificate.yaml
   - network-policies.yaml
+  - pod-disruption-budget.yaml
+  - shared-assets-pvc.yaml
+configMapGenerator:
+  - name: tarka-asset-sync
+    files:
+      - sync-assets.sh=scripts/sync-assets.sh
+    options:
+      labels:
+        app: tarka
+        owner: platform
 images:
   - name: ghcr.io/cogfor/nicholson31tarka.com
     newName: ghcr.io/cogfor/nicholson31tarka.com
-    newTag: sha-fd0d12c74d873c55e8244961231f0d50172aaf21
-    digest: sha256:47490a3bf265bc1bc512c17b0afebb227940983b9613792befbfdc4bdb4a8ec0
+    newTag: sha-d96d2e1fa9405a11c063d95e68ad355ad942ea46
+    digest: sha256:999e8f7381e1e8a3bf26b268a942060824a6fa40023bd5a1676935abbdc93956
 replicas:
   - name: tarka
     count: 2

@@ -27,6 +27,14 @@ spec:
         linkerd.io/inject: disabled
     spec:
       automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 15
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: tarka
       imagePullSecrets:
         - name: ghcr-tarka-pull
       securityContext:
@@ -34,8 +42,51 @@ spec:
         runAsUser: 101
         runAsGroup: 101
         fsGroup: 101
+        fsGroupChangePolicy: OnRootMismatch
         seccompProfile:
           type: RuntimeDefault
+      initContainers:
+        - name: sync-shared-assets
+          image: ghcr.io/oras-project/oras:v1.3.2@sha256:46c55ba0eac848ade573594ef23fa5b1784227f151dab6eac38de2afd0b9c382
+          command:
+            - /bin/sh
+            - /opt/tarka/bin/sync-assets.sh
+          env:
+            - name: ASSET_REPOSITORY
+              value: ghcr.io/cogfor/nicholson31tarka.com-assets
+            - name: ASSET_TAG
+              value: sha-d96d2e1fa9405a11c063d95e68ad355ad942ea46
+            - name: ASSET_ROOT
+              value: /shared-assets
+            - name: DOCKER_CONFIG
+              value: /registry-auth
+            - name: HOME
+              value: /tmp/oras-home
+          resources:
+            requests:
+              cpu: 20m
+              memory: 32Mi
+            limits:
+              cpu: 500m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - name: shared-assets
+              mountPath: /shared-assets
+            - name: tmp
+              mountPath: /tmp
+            - name: registry-auth
+              mountPath: /registry-auth
+              readOnly: true
+            - name: asset-sync-script
+              mountPath: /opt/tarka/bin/sync-assets.sh
+              subPath: sync-assets.sh
+              readOnly: true
       containers:
         - name: tarka
           image: ghcr.io/cogfor/nicholson31tarka.com:bootstrap
@@ -80,9 +131,25 @@ spec:
           volumeMounts:
             - name: tmp
               mountPath: /tmp
+            - name: shared-assets
+              mountPath: /srv/tarka-assets
+              readOnly: true
       volumes:
         - name: tmp
           emptyDir: {}
+        - name: shared-assets
+          persistentVolumeClaim:
+            claimName: tarka-shared-assets
+        - name: registry-auth
+          secret:
+            secretName: ghcr-tarka-pull
+            items:
+              - key: .dockerconfigjson
+                path: config.json
+        - name: asset-sync-script
+          configMap:
+            name: tarka-asset-sync
+            defaultMode: 0555
 ---
 apiVersion: v1
 kind: Service
