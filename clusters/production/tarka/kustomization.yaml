@@ -13,8 +13,8 @@ resources:
 images:
   - name: ghcr.io/cogfor/nicholson31tarka.com
     newName: ghcr.io/cogfor/nicholson31tarka.com
-    newTag: sha-ee3ad81dee18c72e9c691dd91b99c92a3485e65b
-    digest: sha256:75183798210d2b0ea506cd9ac25daa5b8d509f1ade6a3a79c03b3857438d2160
+    newTag: sha-bbc7fc1d0a86b9e0752be80f0f10cf4e381021b5
+    digest: sha256:93280c07cc0505a146360ae989c69a2410e51894c4757262cbbbb7db093bbb8e
 replicas:
   - name: tarka
     count: 2
