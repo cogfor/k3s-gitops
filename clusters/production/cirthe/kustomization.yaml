@@ -11,8 +11,8 @@ resources:
 images:
   - name: ghcr.io/cogfor/cirthe.com
     newName: ghcr.io/cogfor/cirthe.com
-    newTag: sha-792876e7ee44fefbdd7ab90770487e4b6970d1e0
-    digest: sha256:31a89d79487a6860237180edc4e6147ec2c7f945e9dce4aea0ebd3fdad655778
+    newTag: sha-4fd298f10a4f3bd9c43b9b93225eab629838320e
+    digest: sha256:fc66d1b1b657f148d79bc0a211b329084ba78ade6ca37b4839fcf53aadaf1b70
 replicas:
   - name: cirthe
     count: 2
