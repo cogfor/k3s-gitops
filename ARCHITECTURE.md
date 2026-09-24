@@ -1,4 +1,4 @@
-# k3s-gitops Architecture
+# Cluster GitOps Architecture
 
 Production-grade k3s Kubernetes cluster with GitOps automation, Zero Trust networking, and comprehensive security controls.
 
@@ -378,7 +378,7 @@ flux logs --level=error
 ## Repository Structure
 
 ```
-k3s-gitops/
+cluster-gitops/
 ├── clusters/production/          # Cluster-specific config
 │   ├── flux-system/              # Flux CD controllers
 │   │   ├── gotk-components.yaml  # Flux installation

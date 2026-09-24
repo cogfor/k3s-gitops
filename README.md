@@ -1,4 +1,4 @@
-# k3s GitOps Repository
+# Cluster GitOps Repository
 
 This repository contains the GitOps configuration for the k3s cluster running on Hetzner Cloud.
 
@@ -43,15 +43,15 @@ The cluster is bootstrapped using Flux CLI:
 
 ```bash
 export GITHUB_TOKEN="your-github-token"
-export GITHUB_USER="cogfor"
-export GITHUB_REPO="k3s-gitops"
+export GITHUB_OWNER="primedio"
+export GITHUB_REPO="cluster-gitops"
 
 flux bootstrap github \
-  --owner=$GITHUB_USER \
+  --owner=$GITHUB_OWNER \
   --repository=$GITHUB_REPO \
   --branch=main \
   --path=clusters/production \
-  --personal
+  --private=false
 ```
 
 After bootstrap, deploy the age private key to the cluster:
